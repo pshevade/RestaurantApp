@@ -1,0 +1,30 @@
+<!doctype html>
+<html>
+    <head>
+    <link rel=stylesheet type=text/css href="{{url_for('static',filename='bootstrap.css')}}">
+    <link rel=stylesheet type=text/css href="{{url_for('static',filename='main.css')}}">
+    <title>Menu Items - Create New</title>
+    </head>
+
+    <body>
+    <h1>Create new menu item</h1>
+    <form action="{{url_for('menuItemNew', restaurant_id=restaurant_id )}}" method = 'POST'>
+
+    <p>Name:</p>
+
+    <input type='text' size='30' name='name'>
+    <p>Description:</p>
+    <input type='text' size='30' name='description'>
+    <p>Price:</p>
+    <input type='text' size='30' name='price'>
+    <p>Course:</p>
+    <input type='radio' name='course' value='Appetizers'>Appetizers<br>
+    <input type='radio' name='course' value='Entree'>Entree<br>
+    <input type='radio' name='course' value='Dessert'>Dessert<br>
+    <input type='radio' name='course' value='Beverage'>Beverage<br>
+
+    <button type='submit' class="btn btn-default btn-lg active" value='Create'>Create</button>
+
+    </form>
+    </body>
+</html>

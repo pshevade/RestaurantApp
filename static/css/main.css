@@ -1,0 +1,84 @@
+*{
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    -ms-box-sizing: border-box;
+    box-sizing: border-box;
+}
+
+.navbar .navbar-default {
+    background: #4DA5C2;
+    border-color: #10789A;
+}
+
+.restaurantPanel {
+    padding: 10px 10px;
+    color: #76539C;
+    border-color: #9C7FBB;
+}
+
+.restaurantPanel .heading {
+    /*background: #A498B5;*/
+    background: #E4D9EF;            /*second lightest color*/
+    border: 1px solid #9C7FBB;      /*second darkest color*/
+    color: #76539C;                 /*Darkest Color*/
+    border-radius: 5px 5px 0px 0px;
+    -webkit-border-radius: 5px 5px 0px 0px;
+    -moz-border-radius: 5px 5px 0px 0px;
+
+}
+
+.restaurantPanel .options {
+    background: #FFF;            /*very light color*/
+    border: 1px solid #9C7FBB;
+    border-top-style: none;
+    padding: 10px 10px;
+    color: #76539C;
+}
+
+.nav-tabs > li > a,
+.nav-tabs > li > a:hover,
+.nav-tabs > li > a:focus {
+    border-style: none;
+}
+
+.nav-tabs > li.active > a,
+.nav-tabs > li.active > a:hover,
+.nav-tabs > li.active > a:focus {
+  color: #76539C;
+  cursor: default;
+  background-color: #FAF7FD;
+  font-weight: bold;
+  border-style: none;
+  border-bottom-color: transparent;
+  border-left:  1px solid #ddd;
+  border-right: 1px solid #ddd;
+  border-top: 1px solid #ddd;
+}
+
+.restaurantPanel .details {
+    margin: 0px;
+    border: 1px solid transparent;
+    background: #FAF7FD;
+    padding: 10px 10px;
+    color: #76539C;
+    border-left:  1px solid #ddd;
+    border-right: 1px solid #ddd;
+    border-bottom: 1px solid #ddd;
+
+}
+
+.restaurantPanel .details .subdetails {
+    height:380px;
+    width:480px;
+    padding: 10px;
+    margin: 0px;
+}
+
+a {
+    color: #76539C;
+}
+
+a:hover, a:focus {
+    font-weight: bold;
+    color: #76539C;
+}

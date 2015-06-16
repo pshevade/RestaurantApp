@@ -1,0 +1,88 @@
+<!doctype html>
+<html>
+<head>
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
+
+    <!-- Optional theme -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap-theme.min.css">
+
+    <link rel="stylesheet" href="../static/css/main.css">
+    <!-- Latest compiled and minified JavaScript -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
+</head>
+
+<body>
+    <header class="navbar" role="banner">
+            <div class="container col-md-12 align_center">
+            <div class="row">
+                    <div class="col-md-12 align_center">
+                    <h1 class="text-center">Local Favorites</h1>
+                    </div>
+            </div>
+            </div>
+      </header>
+    <div class="container col-md-12 align_center">
+    <nav class="navbar navbar-default">
+      <div class="container-fluid">
+            <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+                    <span class="sr-only">Toggle Navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+            </button>
+          <a class="navbar-brand" href="{{url_for('restaurantsPage')}}">Home</a>
+          <a class="navbar-brand" href="{{url_for('restaurantMenu', restaurant_id=restaurant.id)}}">Back to {{restaurant.name}} menu</a>
+          </div>
+          <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+            <form class="navbar-form navbar-left" role="search" method="POST" action="">
+                <div class="form-group">
+                    <input type="text" name="search" class="form-control" placeholder="Search">
+                </div>
+            <button type="submit" class="btn btn-default" disabled>Submit</button>
+            </form>
+          </div>
+        </div>
+    </nav>
+</div>
+
+<div class="container">
+    <div class="row restaurantPanel">
+        <h1>Welcome to {{restaurant.name}}</h1>
+    </div>
+    <div class="row details">
+        <p>Here is the menu</p>
+    </div>
+    {% for item in menu_list %}
+    <div class ="row">
+        <div class ="col-md-9">
+            {{item.name}}
+        </div>
+        <div class="col-md-3">
+            {{item.price}}
+        </div>
+    </div>
+    <div class="row">
+        <div class = "col-md-9">
+                {{item.description}}<br>
+                <br><a href="{{url_for('menuItemEdit', restaurant_id = restaurant.id, menu_id = item.id)}}">edit</a> <a href="{{url_for('menuItemDelete', restaurant_id = restaurant.id, menu_id = item.id)}}">delete</a>
+        </div>
+
+        <div class = "col-md-3">
+        <form action="{{url_for('voteForItem', item_id = item.id, vote = 1)}}">
+            <button type='submit' class="btn btn-success">{{item.likes}} <span class="glyphicon glyphicon-thumbs-up" aria-hidden="true"></span></button>
+
+        </form>
+        <form action="{{url_for('voteForItem', item_id = item.id, vote = 2)}}">
+            <button type='submit' class='btn btn-danger'>{{item.dislikes}} <span class="glyphicon glyphicon-thumbs-down" aria-hidden="true"></span></button>
+        </form>
+        </div>
+
+    </div>
+    {% endfor %}
+
+    <form action="{{url_for('menuItemNew', restaurant_id = restaurant.id)}}" >
+            <button type='submit' class="btn btn-default btn-lg active" value="New Menu Item">Create New Item</button>
+</body>
+</html>
