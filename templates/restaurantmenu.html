@@ -1,88 +1,191 @@
 <!doctype html>
 <html>
-<head>
-    <!-- Latest compiled and minified CSS -->
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
 
-    <!-- Optional theme -->
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap-theme.min.css">
+{% extends "navbar-restaurantdetails.html" %}
+{% block restaurant_details %}
+  <div class ="container">
+    <header class="heading col-md-12">
+      <h2>Menu for {{restaurant.name}}</h2>
+    </header>
 
-    <link rel="stylesheet" href="../static/css/main.css">
-    <!-- Latest compiled and minified JavaScript -->
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
-</head>
-
-<body>
-    <header class="navbar" role="banner">
-            <div class="container col-md-12 align_center">
-            <div class="row">
-                    <div class="col-md-12 align_center">
-                    <h1 class="text-center">Local Favorites</h1>
-                    </div>
-            </div>
-            </div>
-      </header>
-    <div class="container col-md-12 align_center">
-    <nav class="navbar navbar-default">
-      <div class="container-fluid">
-            <div class="navbar-header">
-            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
-                    <span class="sr-only">Toggle Navigation</span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-            </button>
-          <a class="navbar-brand" href="{{url_for('restaurantsPage')}}">Home</a>
-          <a class="navbar-brand" href="{{url_for('restaurantMenu', restaurant_id=restaurant.id)}}">Back to {{restaurant.name}} menu</a>
-          </div>
-          <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
-            <form class="navbar-form navbar-left" role="search" method="POST" action="">
-                <div class="form-group">
-                    <input type="text" name="search" class="form-control" placeholder="Search">
+    <main class="body col-md-12">
+        <section class="restaurantPanel col-md-12 col-xs-12">
+          <!-- This is where the Restaurant name and tags go -->
+          <article class="row align_center">
+            <div class="heading col-md-12">
+              <div class="row">
+                <div class="col-md-12 col-xs-12 align_center">
+                  <h3>Appetizers</h3>
                 </div>
-            <button type="submit" class="btn btn-default" disabled>Submit</button>
-            </form>
-          </div>
-        </div>
-    </nav>
-</div>
+              </div>
+            </div>
+          </article>
 
-<div class="container">
-    <div class="row restaurantPanel">
-        <h1>Welcome to {{restaurant.name}}</h1>
-    </div>
-    <div class="row details">
-        <p>Here is the menu</p>
-    </div>
-    {% for item in menu_list %}
-    <div class ="row">
-        <div class ="col-md-9">
-            {{item.name}}
-        </div>
-        <div class="col-md-3">
-            {{item.price}}
-        </div>
-    </div>
-    <div class="row">
-        <div class = "col-md-9">
-                {{item.description}}<br>
-                <br><a href="{{url_for('menuItemEdit', restaurant_id = restaurant.id, menu_id = item.id)}}">edit</a> <a href="{{url_for('menuItemDelete', restaurant_id = restaurant.id, menu_id = item.id)}}">delete</a>
-        </div>
+          <!-- This is where all the appetizers go -->
+          {% for item in menu_list %}
+          {% if item.course == "Appetizer" %}
+          <article class="options row align_center">
+              <div class = "col-md-10">
+              			{{item.name}}
+              			<br>
+		                {{item.description}}
+		                <br>
+		                <!-- If the user is logged in, let him edit the item, and if the user created the item let them delete it -->           
+		                {% if user_info is not none %}
+		                <a href="{{url_for('menuItemEdit', restaurant_id = restaurant.id, menu_id = item.id)}}">edit</a> 
+		                {% if user_info.email == restaurant.user.email %}<a href="{{url_for('menuItemDelete', restaurant_id = restaurant.id, menu_id = item.id)}}">delete</a>
+		                {% endif %}
+		                {% endif %}
+			  </div>
 
-        <div class = "col-md-3">
-        <form action="{{url_for('voteForItem', item_id = item.id, vote = 1)}}">
-            <button type='submit' class="btn btn-success">{{item.likes}} <span class="glyphicon glyphicon-thumbs-up" aria-hidden="true"></span></button>
+	          <div class = "col-md-1">
+	        	<form action="{{url_for('voteForItem', item_id = item.id, vote = 1)}}">
+	            	<button type='submit' class="btn btn-success">{{item.likes}} <span class="glyphicon glyphicon-thumbs-up" aria-hidden="true"></span></button>
+	        	</form>
+	          </div>
+	          <div class = "col-md-1">
+	        	<form action="{{url_for('voteForItem', item_id = item.id, vote = 2)}}">
+		            <button type='submit' class='btn btn-danger'>{{item.dislikes}} <span class="glyphicon glyphicon-thumbs-down" aria-hidden="true"></span></button>
+		        </form>
+        	  </div>
+          </article>
+          {% endif %}
+          {% endfor %}
+        </section>
+        <section class="restaurantPanel col-md-12 col-xs-12">
+        <!-- This is the section for the Entrees -->
+          <article class="row align_center">
+            <div class="heading col-md-12">
+              <div class="row">
+                <div class="col-md-12 col-xs-12 align_center">
+                  <h3>Entrees</h3>
+                </div>
+              </div>
+            </div>
+          </article>
 
-        </form>
-        <form action="{{url_for('voteForItem', item_id = item.id, vote = 2)}}">
-            <button type='submit' class='btn btn-danger'>{{item.dislikes}} <span class="glyphicon glyphicon-thumbs-down" aria-hidden="true"></span></button>
-        </form>
-        </div>
+          <!-- The entree items are listed here -->
+          {% for item in menu_list %}
+          {% if item.course == "Entree" %}
+          <article class="options row align_center">
+              <div class = "col-md-10">
+		                {{item.name}}
+              			<br>
+		                {{item.description}}
+		                <br>
+		                <!-- If the user is logged in, let him edit the item, and if the user created the item let them delete it -->
+		                {% if user_info is not none %}
+		                <a href="{{url_for('menuItemEdit', restaurant_id = restaurant.id, menu_id = item.id)}}">edit</a> 
+		                {% if user_info.email == restaurant.user.email %}<a href="{{url_for('menuItemDelete', restaurant_id = restaurant.id, menu_id = item.id)}}">delete</a>
+		                {% endif %}
+		                {% endif %}
+			  </div>
 
-    </div>
-    {% endfor %}
+	          <div class = "col-md-1">
+	        	<form action="{{url_for('voteForItem', item_id = item.id, vote = 1)}}">
+	            	<button type='submit' class="btn btn-success">{{item.likes}} <span class="glyphicon glyphicon-thumbs-up" aria-hidden="true"></span></button>
+	        	</form>
+	          </div>
+	          <div class = "col-md-1">
+	        	<form action="{{url_for('voteForItem', item_id = item.id, vote = 2)}}">
+		            <button type='submit' class='btn btn-danger'>{{item.dislikes}} <span class="glyphicon glyphicon-thumbs-down" aria-hidden="true"></span></button>
+		        </form>
+        	  </div>
+          </article>
+          {% endif %}
+          {% endfor %}
+        </section>
+        <section class="restaurantPanel col-md-12 col-xs-12">
+          <!-- This is where all the desserts go -->
+          <article class="row align_center">
+            <div class="heading col-md-12">
+              <div class="row">
+                <div class="col-md-12 col-xs-12 align_center">
+                  <h3>Desserts</h3>
+                </div>
+              </div>
+            </div>
+          </article>
 
-    <form action="{{url_for('menuItemNew', restaurant_id = restaurant.id)}}" >
-            <button type='submit' class="btn btn-default btn-lg active" value="New Menu Item">Create New Item</button>
-</body>
-</html>
+          <!-- the dessert items are listed here -->
+          {% for item in menu_list %}
+          {% if item.course == "Dessert" %}
+          <article class="options row align_center">
+              <div class = "col-md-10">
+		                {{item.name}}
+              			<br>
+		                {{item.description}}
+		                <br>
+		                <!-- If the user is logged in, let him edit the item, and if the user created the item let them delete it -->
+		                {% if user_info is not none %}
+		                <a href="{{url_for('menuItemEdit', restaurant_id = restaurant.id, menu_id = item.id)}}">edit</a> 
+		                {% if user_info.email == restaurant.user.email %}<a href="{{url_for('menuItemDelete', restaurant_id = restaurant.id, menu_id = item.id)}}">delete</a>
+		                {% endif %}
+		                {% endif %}
+			  </div>
+
+	          <div class = "col-md-1">
+	        	<form action="{{url_for('voteForItem', item_id = item.id, vote = 1)}}">
+	            	<button type='submit' class="btn btn-success">{{item.likes}} <span class="glyphicon glyphicon-thumbs-up" aria-hidden="true"></span></button>
+	        	</form>
+	          </div>
+	          <div class = "col-md-1">
+	        	<form action="{{url_for('voteForItem', item_id = item.id, vote = 2)}}">
+		            <button type='submit' class='btn btn-danger'>{{item.dislikes}} <span class="glyphicon glyphicon-thumbs-down" aria-hidden="true"></span></button>
+		        </form>
+        	  </div>
+          </article>
+          {% endif %}
+          {% endfor %}
+        </section>
+        <section class="restaurantPanel col-md-12 col-xs-12">
+          <!-- This is where all the beverages go -->
+          <article class="row align_center">
+            <div class="heading col-md-12">
+              <div class="row">
+                <div class="col-md-12 col-xs-12 align_center">
+                  <h3>Beverages</h3>
+                </div>
+              </div>
+            </div>
+          </article>
+
+          <!-- the beverage items are listed here -->
+          {% for item in menu_list %}
+          {% if item.course == "Beverage" %}
+          <article class="options row align_center">
+              <div class = "col-md-10">
+		                {{item.name}}
+              			<br>
+		                {{item.description}}
+		                <br>
+		                <!-- If the user is logged in, let him edit the item, and if the user created the item let them delete it -->
+		                {% if user_info is not none %}
+		                <a href="{{url_for('menuItemEdit', restaurant_id = restaurant.id, menu_id = item.id)}}">edit</a> 
+		                {% if user_info.email == restaurant.user.email %}<a href="{{url_for('menuItemDelete', restaurant_id = restaurant.id, menu_id = item.id)}}">delete</a>
+		                {% endif %}
+		                {% endif %}
+			  </div>
+
+	          <div class = "col-md-1">
+	        	<form action="{{url_for('voteForItem', item_id = item.id, vote = 1)}}">
+	            	<button type='submit' class="btn btn-success">{{item.likes}} <span class="glyphicon glyphicon-thumbs-up" aria-hidden="true"></span></button>
+	        	</form>
+	          </div>
+	          <div class = "col-md-1">
+	        	<form action="{{url_for('voteForItem', item_id = item.id, vote = 2)}}">
+		            <button type='submit' class='btn btn-danger'>{{item.dislikes}} <span class="glyphicon glyphicon-thumbs-down" aria-hidden="true"></span></button>
+		        </form>
+        	  </div>
+          </article>
+          {% endif %}
+          {% endfor %}
+		</section>
+
+		<form action="{{url_for('menuItemNew', restaurant_id = restaurant.id)}}" >
+	  		<button type='submit' class="btn btn-default btn-lg active" value="New Menu Item">Create New Item</button>
+		</form>
+    </main>
+  </div>
+
+{% endblock %}

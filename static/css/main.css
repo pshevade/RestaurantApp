@@ -3,6 +3,7 @@
     -moz-box-sizing: border-box;
     -ms-box-sizing: border-box;
     box-sizing: border-box;
+
 }
 
 .navbar .navbar-default {
@@ -81,4 +82,22 @@ a {
 a:hover, a:focus {
     font-weight: bold;
     color: #76539C;
+}
+
+.time_text {
+    font-size: 80%;
+}
+
+.menu_list {
+    padding: 10px;
+}
+
+.menu_item_odd {
+    padding: 5px;
+    background-color: #FAF7FD;
+}
+
+.menu_item_even {
+    padding: 5px;
+    background-color: ;
 }

@@ -1,7 +1,8 @@
 import os
 import sys
+from datetime import datetime
 
-from sqlalchemy import Column, ForeignKey, Integer, String
+from sqlalchemy import Column, ForeignKey, Integer, String, DateTime
 
 from sqlalchemy.ext.declarative import declarative_base
 
@@ -11,6 +12,15 @@ from sqlalchemy import create_engine
 
 Base = declarative_base()
 
+class User(Base):
+    __tablename__ = 'user'
+
+    id = Column(Integer, primary_key=True)
+    name = Column(String(100), nullable=False)
+    email = Column(String(100), nullable=False)
+    picture = Column(String(150), nullable=True)
+
+
 class Restaurant(Base):
     __tablename__ = 'restaurant'
 
@@ -19,9 +29,10 @@ class Restaurant(Base):
     address = Column(String(250), nullable=True)
     phone = Column(String(16), nullable=True)
     web = Column(String(50), nullable=True)
-    tag_line = Column(String(250), nullable=True)
     description = Column(String(500), nullable=True)
-
+    last_update = Column(DateTime, default=datetime.utcnow())
+    user_id = Column(Integer, ForeignKey('user.id'))
+    user = relationship(User)
 
     @property
     def serialize(self):
@@ -30,8 +41,8 @@ class Restaurant(Base):
             'address'   : self.address,
             'phone'     : self.phone,
             'web'       : self.web,
-            'tag_line'  : self.tag_line,
-            'description': self.description
+            'description': self.description,
+            'last_update': str(self.last_update)
         }
 
 
@@ -51,6 +62,7 @@ class Reviews(Base):
     reviewer_name = Column(String(100), nullable=False)
     review = Column(String(500), nullable=False)
     stars = Column(Integer, nullable=False)
+    time = Column(DateTime, default=datetime.utcnow())
     restaurant_id = Column(Integer, ForeignKey('restaurant.id'))
     restaurant = relationship(Restaurant)
 
@@ -62,6 +74,7 @@ class Reviews(Base):
             'review'            : self.review,
             'stars'             : self.stars,
             'id'                : self.id,
+            'time'              : str(self.time),
         }
 
 
@@ -77,6 +90,8 @@ class MenuItem(Base):
     dislikes = Column(Integer, nullable=False)
     restaurant_id = Column(Integer, ForeignKey('restaurant.id'))
     restaurant = relationship(Restaurant)
+    user_id = Column(Integer, ForeignKey('user.id'))
+    user = relationship(User)
 
     # We added this serialize function to be able to send JSON objects in a serializable format
     @property
@@ -93,13 +108,6 @@ class MenuItem(Base):
         }
 
 
-class User(Base):
-    __tablename__ = 'user'
-
-    id = Column(Integer, primary_key=True)
-    name = Column(String(100), nullable=False)
-    email = Column(String(100), nullable=False)
-    picture = Column(String(150), nullable=True)
 
 
 engine = create_engine('sqlite:///myrestaurantmenu.db')

@@ -1,6 +1,12 @@
 (function(){
     var app = angular.module('restaurants', []);
 
+    /* PanelController - 
+        Controller for the panel for each restaurant selection, 
+        user can select between the description of the restaurant (default),
+                                or the reviews (and add reviews), 
+                                or view the map to the location. 
+    */
     app.controller("PanelController", function($scope, ReviewsService, MapService){
         console.log("PanelController on")
         $scope.tab = 1;
@@ -8,15 +14,28 @@
         $scope.reviewOn = 0;
         $scope.review = {};
 
+
+        /* selectTab - 
+            sets the tab that the user clicked on 
+            (setTab = 1 for description, = 2 for review, = 3 for map)
+        */
         $scope.selectTab = function(setTab) {
             $scope.tab = setTab;
             console.log("We set tab: ", $scope.tab)
         };
 
+
+        /* isSelected - 
+            return true/false if a tab was selected (tab number passed as checkTab)
+        */
         $scope.isSelected = function(checkTab) {
             return $scope.tab === checkTab;
         };
 
+
+        /* showReviewToggle -
+            toggle the reviews tab, if the correct tab is selected
+        */
         $scope.showReviewToggle = function() {
             if ($scope.reviewOn === 1) {
                 $scope.reviewOn = 0;
@@ -27,10 +46,18 @@
             };
         };
 
+
+        /* showReviewOn - 
+            return true if review tab is selected
+        */
         $scope.showReviewOn = function() {
             return $scope.reviewOn === 1;
         };
 
+
+        /* getReviews - 
+            make the API call to get the reviews as JSON object
+        */
         $scope.getReviews = function(restaurant_id) {
             console.log("Inside getReviews")
             ReviewsService.getReviews(restaurant_id).then(function(dataResponse){
@@ -38,6 +65,10 @@
             });
         };
 
+
+        /* addNewReview -
+            add a new review to the database
+        */
         $scope.addNewReview = function(restaurant_id) {
             console.log("The review object:", $scope.review)
             ReviewsService.addReview(restaurant_id, $scope.review).then(function(dataResponse){
@@ -46,20 +77,28 @@
             $scope.getReviews(restaurant_id);
         };
 
+
+        /* getMap - 
+            initialize the map to the location of the restaurant. 
+        */
         $scope.getMap = function(address, rid){
             //$scope.map = new google.maps.Map(document.getElementById(rid),{zoom:15, mapTypeId:google.maps.MapTypeId.ROADMAP});
-
+            //TODO : right now, we are passing the restaurant name and address
+            //       in the future we want to check the restaurant first, if that DOESN't work, then address
+            console.log(address)
             MapService.initialize(address, rid);
-            //MapService.update_maps();
+            MapService.update_maps();
         };
-
-
     });
 
 
+    /* ReviewService - 
+        Service to get the reviews and send new reviews to the database
+    */
     app.service("ReviewsService", function($http){
         console.log("ReviewsService on")
         //this.review = {};
+
 
         this.getReviews = function(restaurant_id) {
             restaurant_url = '/restaurants/' + restaurant_id + '/reviews/JSON';
@@ -69,6 +108,7 @@
                 headers : {'Content-Type': 'application/json'},
             });
         }
+
 
         this.addReview = function(restaurant_id, review_obj) {
             restaurant_url = '/restaurants/' + restaurant_id + '/addnewreview';
@@ -83,16 +123,26 @@
     });
 
 
-
+    /* MapService - 
+        Get the google map and place marker on the address of the restaurant
+    */
     app.service("MapService", function(){
         var mymap = this;
         mymap.map;
         mymap.prop;
         mymap.city = "";
-        mymap.mapcollection = []
+        mymap.mapcollection = []    // to contain all maps for all restaurants
         console.log("MapService on");
+        
+
+        /* initialize - 
+            get the map from google maps service
+            place the pin on the map
+            add map to a collection of maps (so we can repeat for all restaurants)
+        */
         mymap.initialize = function(address, rid){
             var exists = 0
+            // if map already exists, don't create a new map
             for (add in mymap.mapcollection){
                 if (mymap.mapcollection.length > 0 && mymap.mapcollection[add].city == address){
                     exists = 1;
@@ -110,10 +160,6 @@
                 console.log(document.getElementById(rid))
                 mymap.pinPoster();
                 mymap.mapcollection.push(mymap.map);
-
-                //mymap.map.setZoom(mymap.map.getZoom() - 1);
-                //mymap.map.setZoom(mymap.map.getZoom() + 1);
-                //mymap.map.setCenter(mymap.map.getCenter())
             };
 
         };

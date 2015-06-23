@@ -1,0 +1,20 @@
+<!-- navbar for restaurants page -->
+{% extends "navbar-template.html" %}
+{% block content %}
+    <a class="navbar-brand" href="{{url_for('restaurantsNew')}}">New Restaurant</a>  
+  </div>
+  <div class="navbar-header navbar-right">
+    {% if user_info is not none %}
+      <a class="navbar-brand" href="#"> Welcome, {{user_info.name}}</a>
+      <a class="navbar-brand" href="{{url_for('log_out')}}">Log Out</a>
+    {% else %}
+      <a class="navbar-brand" href="{{url_for('showLogin')}}">Log In</a>
+    {% endif %} 
+  </div>
+</nav>
+
+{% block restaurant_content %}
+
+{% endblock %}
+
+{% endblock %}

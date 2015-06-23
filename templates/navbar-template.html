@@ -1,0 +1,31 @@
+<head>
+  <!-- Latest compiled and minified CSS -->
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
+  <!-- Optional theme -->
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap-theme.min.css">
+  <script type="text/javascript" src="http://maps.googleapis.com/maps/api/js?libraries=places"></script>
+  <link rel="stylesheet" href="/static/css/main.css">
+</head>
+
+<body>  
+  <header class="navbar" role="banner">
+    <div class="container col-md-12 align_center">
+      <div class="row">
+        <div class="col-md-12 align_center">
+          <h1 class="text-center">Local Favorites</h1>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <nav class="container-fluid col-md-12 align_center navbar navbar-default">
+    <div class="navbar-header">
+      <a class="navbar-brand" href="{{url_for('restaurantsPage')}}">Home</a>
+      
+    {% block content %}
+
+    {% endblock %}
+  
+
+</body>
+</html>
