@@ -101,3 +101,8 @@ a:hover, a:focus {
     padding: 5px;
     background-color: ;
 }
+
+.user_name_text {
+    font-size: 85%;
+    font-weight: bold;
+}

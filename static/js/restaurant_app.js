@@ -1,6 +1,11 @@
 (function(){
     var app = angular.module('restaurants', []);
 
+    app.config(['$interpolateProvider', function($interpolateProvider){
+        $interpolateProvider.startSymbol('[[');
+        $interpolateProvider.endSymbol(']]');
+    }])
+
     /* PanelController - 
         Controller for the panel for each restaurant selection, 
         user can select between the description of the restaurant (default),
@@ -112,7 +117,7 @@
 
         this.addReview = function(restaurant_id, review_obj) {
             restaurant_url = '/restaurants/' + restaurant_id + '/addnewreview';
-            //console.log(review);
+            console.log("Sending HTTP req to ", restaurant_url);
             return $http({
                 method  : 'POST',
                 url     : restaurant_url,

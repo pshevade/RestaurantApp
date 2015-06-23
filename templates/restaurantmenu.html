@@ -30,7 +30,8 @@
               			<br>
 		                {{item.description}}
 		                <br>
-		                <!-- If the user is logged in, let him edit the item, and if the user created the item let them delete it -->           
+		                <p class='user_name_text'>Added by: {{item.user.name}}</p> 
+		                <!-- If the user is logged in, let him edit the item, and if the user created the item let them delete it -->
 		                {% if user_info is not none %}
 		                <a href="{{url_for('menuItemEdit', restaurant_id = restaurant.id, menu_id = item.id)}}">edit</a> 
 		                {% if user_info.email == restaurant.user.email %}<a href="{{url_for('menuItemDelete', restaurant_id = restaurant.id, menu_id = item.id)}}">delete</a>
@@ -73,6 +74,7 @@
               			<br>
 		                {{item.description}}
 		                <br>
+		                <p class='user_name_text'>Added by: {{item.user.name}}</p> 
 		                <!-- If the user is logged in, let him edit the item, and if the user created the item let them delete it -->
 		                {% if user_info is not none %}
 		                <a href="{{url_for('menuItemEdit', restaurant_id = restaurant.id, menu_id = item.id)}}">edit</a> 
@@ -116,6 +118,7 @@
               			<br>
 		                {{item.description}}
 		                <br>
+		                <p class='user_name_text'>Added by: {{item.user.name}}</p> 
 		                <!-- If the user is logged in, let him edit the item, and if the user created the item let them delete it -->
 		                {% if user_info is not none %}
 		                <a href="{{url_for('menuItemEdit', restaurant_id = restaurant.id, menu_id = item.id)}}">edit</a> 
@@ -159,6 +162,7 @@
               			<br>
 		                {{item.description}}
 		                <br>
+		                <p class='user_name_text'>Added by: {{item.user.name}}</p> 
 		                <!-- If the user is logged in, let him edit the item, and if the user created the item let them delete it -->
 		                {% if user_info is not none %}
 		                <a href="{{url_for('menuItemEdit', restaurant_id = restaurant.id, menu_id = item.id)}}">edit</a> 

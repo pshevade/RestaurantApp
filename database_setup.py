@@ -46,6 +46,15 @@ class Restaurant(Base):
         }
 
 
+class Image(Base):
+    __tablename__ = 'image'
+
+    id = Column(Integer, primary_key=True)
+    image_path = Column(String(50), nullable=False)
+    upload_by = Column(Integer, ForeignKey('user.id'))
+    user = relationship(User)
+
+
 class Tags(Base):
     __tablename__ = 'tags'
 
@@ -108,6 +117,22 @@ class MenuItem(Base):
         }
 
 
+class MenuItemImages(Base):
+    __tablename__ = 'menuitem_images'
+    id = Column(Integer, primary_key=True)
+    menu_id = Column(Integer, ForeignKey('menuItem.id'))
+    menuItem = relationship(MenuItem)
+    image_id = Column(Integer, ForeignKey('image.id'))
+    image = relationship(Images)
+
+
+class RestaurantImages(Base):
+    __tablename__ = 'restaurant_images'
+    id = Column(Integer, primary_key=True)
+    restaurant_id = Column(Integer, ForeignKey('restaurant.id'))
+    restaurant = relationship(Restaurant)
+    image_id = Column(Integer, ForeignKey('image.id'))
+    image = relationship(Images)
 
 
 engine = create_engine('sqlite:///myrestaurantmenu.db')

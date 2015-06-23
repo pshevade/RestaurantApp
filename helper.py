@@ -1,6 +1,6 @@
 # helper.py
 from session_setup import *
-
+from urlparse import urlparse
 
 """ 
     getTopMenuItems
@@ -93,3 +93,14 @@ def handle_login(login_session):
     if 'email' not in login_session:
         return False
     return True
+
+
+def checkRestaurantURL(link):
+    print("The Restaurant link before any parsing, raw is: {}".format(link))
+    link_url_obj = urlparse(link)
+    if link_url_obj.scheme is '':
+        link = 'http://'+ link
+        print("checkRestaurantURL - updated the link - the link scheme is: {}".format(link))
+    else:
+        print("checkRestaurantURL - the link scheme is: {}".format(link_url_obj.scheme))
+    return link 

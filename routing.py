@@ -38,7 +38,7 @@ def restaurantsPage():
         print("We are reading stuff from form")
 
     elif request.method == 'GET':
-        restaurant_list = session.query(Restaurant).all()
+        restaurant_list = session.query(Restaurant).order_by("last_update desc").all()
         reviews_list={}
         tag_list = {}
         for restaurant in restaurant_list:
@@ -46,7 +46,7 @@ def restaurantsPage():
             reviews_list[restaurant.id] = session.query(Reviews).filter_by(restaurant_id = restaurant.id)
             tag_list[restaurant.id] = session.query(Tags).filter_by(restaurant_id = restaurant.id)
         top_menu_item_list = getTopMenuItems(restaurant_list)
-    
+        print("The top menu item list is: {}".format(top_menu_item_list))
     user_info = getUserIfExists(login_session)
     if user_info is not None:
     	print("User name: {}".format(user_info.name))
@@ -83,7 +83,7 @@ def restaurantsEdit(restaurant_id):
         if len(request.form['phone']) > 0:
             restaurant.phone = request.form['phone']
         if len(request.form['web']) > 0:
-            restaurant.web = request.form['web']
+            restaurant.web = checkRestaurantURL(request.form['web'])
         if len(request.form['tag_line']) > 0:
             restaurant.tag_line = request.form['tag_line']
         if len(request.form['description']) > 0:
@@ -146,7 +146,7 @@ def restaurantsNew():
         newRestaurant = Restaurant( name=request.form['name'],
                                     address = request.form['address'],
                                     phone = request.form['phone'],
-                                    web = request.form['web'],
+                                    web = checkRestaurantURL(request.form['web']),
                                     description = request.form['description'],
                                     last_update = datetime.utcnow(),
                                     user_id = login_session['user_id'])
@@ -185,7 +185,7 @@ def restaurantMenu(restaurant_id):
     #return "This is the menu display page for restaurant {0}".format(restaurant_id)
     restaurant = session.query(Restaurant).filter_by(id=restaurant_id).one()
     #print("the menu for restaurant of id: {0}".format(restaurant.id))
-    menu_list = session.query(MenuItem).filter_by(restaurant_id = restaurant_id)
+    menu_list = session.query(MenuItem).filter_by(restaurant_id = restaurant_id).order_by("likes-dislikes desc")
     # .filter_by(course="Appetizers").all()
     # menu_list_entrees = session.query(MenuItem).filter_by(restaurant_id=restaurant_id).filter_by(course="Entree").all()
     # menu_list_desserts = session.query(MenuItem).filter_by(restaurant_id=restaurant_id).filter_by(course="Dessert").all()
@@ -300,6 +300,7 @@ def addNewReview(restaurant_id):
     #restaurant = session.query(Restaurant).filter_by(id = restaurant_id).one()
     # if 'username' not in login_session:
     #     return redirect('/login')
+    print("Inside addNewReview")
     if handle_login(login_session) is False:
         return redirect('/login')   
 

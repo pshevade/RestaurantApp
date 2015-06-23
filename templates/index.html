@@ -20,6 +20,7 @@
               <div class="row">
                 <div class="col-md-12 col-xs-12 align_center">
                   <h3><a href="{{url_for('restaurantMenu', restaurant_id=restaurant.id)}}">{{restaurant.name}}</a></h3>
+                  <p><a href="{{restaurant.web}}">{{restaurant.web}}</a></p>
                 </div>
               </div>
               <div class="row">
@@ -53,29 +54,33 @@
               <div class="details row align_center">
                 <div ng-show="isSelected(1)">
                   <p>{{restaurant.description}}</p>
-                  <p>The best dish as voted is {{top_menu_items[restaurant.name]}}</p>
+                  <p>The best dish as voted is 
+                  {% if top_menu_items[restaurant.name] is defined %}
+                  	{{top_menu_items[restaurant.name]}}
+                  {% else %}
+                  	not decided yet, go vote!
+                  {% endif %} </p>
+                  <p class='user_name_text'>Added by: {{restaurant.user.name}}</p>
                 </div>
                 <div class="col-md-12" ng-show="isSelected(2)">
-                {% raw %}
                   <div id="show-reviews">
                     <ul class="list-group">
                       <li ng-repeat="x in reviews" class="list-group-item">
-                        <h4 class="list-group-item-heading">{{x.reviewer_name}}</h4>
+                        <h4 class="list-group-item-heading">[[x.reviewer_name]]</h4>
                         <!-- TODO: Better parse Timestamps -->
                         <p class="list-group-item-text time_text">
-                        	@ {{x.time}} UTC
+                        	@ [[x.time]] UTC
                         </p>
                         <br>
                         <p class="list-group-item-text">
-                          {{x.stars}} Stars
-                          <br><em>{{x.review}}</em>
+                          [[x.stars]] Stars
+                          <br><em>[[x.review]]</em>
                         </p>
                       </li>
                     </ul>
                   </div>
-                  <button class="btn btn-default" type="submit" ng-click="showReviewToggle()" ng-model="add_cancel">{{add_cancel}}</button>
-                {% endraw %}
-              
+                {% if user_info is not none %}
+                  <button class="btn btn-default" type="submit" ng-click="showReviewToggle()" ng-model="add_cancel">[[add_cancel]]</button>
                   <div id="add-review" ng-show="showReviewOn()">
                     <form name="reviewForm" method='post' ng-submit="addNewReview('{{restaurant.id}}')" novalidate>
                       <h4>Submit a reivew: </h4>
@@ -92,11 +97,14 @@
                       </fieldset>
                     </form>
                   </div>
+                {% else %}
+                  <p>Please <a href="{{url_for('showLogin')}}">log-in</a> to post a review</p> 
+                {% endif %}
                 </div>
                 <div ng-show="isSelected(3)" class="subdetails" id="{{restaurant.id}}">
                 </div>
               </div>
-            </div>
+            </div> 
             <p class="time_text">
 	          Last updated: {{restaurant.last_update}} UTC
           	</p>
