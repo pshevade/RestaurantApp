@@ -12,13 +12,15 @@
                                 or the reviews (and add reviews), 
                                 or view the map to the location. 
     */
-    app.controller("PanelController", function($scope, ReviewsService, MapService){
+    app.controller("PanelController", function($scope, ReviewsService, MapService, ImageService){
         console.log("PanelController on")
         $scope.tab = 1;
         $scope.add_cancel = "Add a Review";
         $scope.reviewOn = 0;
         $scope.review = {};
-
+        $scope.myInterval = 5000;
+        $scope.slides = {};
+        
 
         /* selectTab - 
             sets the tab that the user clicked on 
@@ -94,6 +96,16 @@
             MapService.initialize(address, rid);
             MapService.update_maps();
         };
+
+        $scope.addSlides = function(restaurant_id) {
+            console.log("in addslides!", restaurant_id)
+            var newWidth = 600 + $scope.slides.length + 1;
+            ImageService.getRestaurantImages(restaurant_id).then(function(dataResponse){
+                $scope.slides = dataResponse.data.RestaurantImagesList
+            });
+            console.log("The slides obtained are: ", $scope.slides)
+        };
+
     });
 
 
@@ -235,21 +247,32 @@
         };
     });
 
-    app.controller('CarouselDemoCtrl', function ($scope) {
-        $scope.myInterval = 5000;
-        var slides = $scope.slides = [];
-        $scope.addSlide = function() {
-            var newWidth = 600 + slides.length + 1;
-            slides.push({
-            image: 'http://placekitten.com/' + newWidth + '/300',
-            text: ['More','Extra','Lots of','Surplus'][slides.length % 4] + ' ' +
-                  ['Cats', 'Kittys', 'Felines', 'Cutes'][slides.length % 4]
+    
+    app.service("ImageService", function($http){
+        console.log("ImageService on")
+        //this.review = {};
+
+
+        this.getRestaurantImages = function(restaurant_id) {
+            restaurant_img_url = '/restaurants/images/' + restaurant_id + '/JSON';
+            return $http({
+                method  : 'GET',
+                url     : restaurant_img_url,
+                headers : {'Content-Type': 'application/json'},
+            });
+        }
+
+
+        this.addReview = function(restaurant_id, review_obj) {
+            restaurant_url = '/restaurants/' + restaurant_id + '/addnewreview';
+            console.log("Sending HTTP req to ", restaurant_url);
+            return $http({
+                method  : 'POST',
+                url     : restaurant_url,
+                data    : review_obj,
+                headers : {'Content-Type': 'application/json'},
             });
         };
-        for (var i=0; i<4; i++) {
-            $scope.addSlide();
-        }
     });
-
 
 })();

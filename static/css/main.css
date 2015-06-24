@@ -106,3 +106,8 @@ a:hover, a:focus {
     font-size: 85%;
     font-weight: bold;
 }
+
+.carousel-image {
+    max-height: 50%;
+    width: 50%;
+}

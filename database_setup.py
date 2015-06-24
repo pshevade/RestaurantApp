@@ -54,6 +54,14 @@ class Image(Base):
     upload_by = Column(Integer, ForeignKey('user.id'))
     user = relationship(User)
 
+    @property
+    def serialize(self):
+        return {
+            'image_path': self.image_path,
+            'user_name' : self.user.name,
+            'user_email': self.user.email,
+        }
+
 
 class Tags(Base):
     __tablename__ = 'tags'

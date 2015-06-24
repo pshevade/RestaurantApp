@@ -104,3 +104,8 @@ def checkRestaurantURL(link):
     else:
         print("checkRestaurantURL - the link scheme is: {}".format(link_url_obj.scheme))
     return link 
+
+
+def allowed_file(filename):
+    return '.' in filename and \
+            filename.rsplit('.', 1)[1] in ALLOWED_EXTENSIONS

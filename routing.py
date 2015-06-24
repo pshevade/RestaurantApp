@@ -15,7 +15,7 @@ from datetime import datetime
 """
 @app.route('/login')
 def showLogin():
-    state =''.join(random.choice(string.ascii_uppercase + string.digits)
+    state =''.join(random.choice(string.ascii_uppercase +    string.digits)
         for x in xrange(32))
     login_session['state'] = state
     #return "The current session state is %s" % login_session['state']
@@ -412,3 +412,63 @@ def restaurantMenuItemJSON(restaurant_id, menu_id):
     return jsonify(MenuItem=item.serialize)
 
 
+@app.route('/restaurants/images/<int:restaurant_id>/JSON')
+def restaurantImagesJSON(restaurant_id):
+    images_list = []
+    print("in review jsons for restaurant: {0}".format(restaurant_id))
+    restaurant_img_list = session.query(RestaurantImages).filter_by(restaurant_id=restaurant_id).all()
+    for rest_img in restaurant_img_list:
+        images_list.append(rest_img.image)
+    return jsonify(RestaurantImagesList=[img.serialize for img in images_list])
+
+@app.route('/restaurant/<int:restaurant_id>/image', methods=['GET', 'POST'])
+def uploadFile(restaurant_id):
+    print("Inside upload_file ")
+    if handle_login(login_session) is False:
+        return redirect('/login')
+    print("User logged in")
+
+    if request.method == 'POST':
+        print("upload_file - POST method")
+        file = request.files['file']
+        if file and allowed_file(file.filename):
+            print("upload_file - filename is ok")
+            filename = secure_filename(file.filename)
+            file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+            print("The uploaded file path is: {}", file_path)
+            file.save(file_path)
+            image_exists = session.query(Image).filter_by(image_path=file_path).first()
+            if image_exists is None:
+                newimage = Image(image_path=file_path,
+                                 upload_by=login_session['user_id'])
+                session.add(newimage)
+                session.commit()
+                img_id = newimage.id
+            else:
+                img_id = image_exists.id
+            rest_img_exists = session.query(RestaurantImages).filter_by(image_id = img_id).first()
+            if rest_img_exists is None or restaurant_id != rest_img_exists.restaurant_id:
+                rest_img = RestaurantImages(restaurant_id=restaurant_id,
+                                            image_id = img_id)
+                session.add(rest_img)
+                session.commit()
+
+    return redirect(url_for('restaurantsPage'))
+
+
+@app.route('/restaurant/<int:restaurant_id>/<int:img_id>/delete', methods=['GET', 'POST'])
+def deleteFile(restaurant_id, img_id):
+    if handle_login(login_session) is False:
+        return redirect('/login')
+
+    image = session.query(Image).filter_by(id=img_id).first()
+    restaurant_img_pair = session.query(RestaurantImages).filter_by(image_id=img_id).first()
+
+    if request.method == 'POST':
+        session.delete(image)
+        session.delete(restaurant_img_pair)
+    
+    return redirect(url_for('restaurantsPage'))
+    # else:
+    #     user_info = getUserIfExists(login_session)
+    #     return render_template('deletemenu.html', restaurant = restaurant, menu_item = menu_item, user_info = user_info)
