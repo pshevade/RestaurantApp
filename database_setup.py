@@ -120,10 +120,10 @@ class MenuItem(Base):
 class MenuItemImages(Base):
     __tablename__ = 'menuitem_images'
     id = Column(Integer, primary_key=True)
-    menu_id = Column(Integer, ForeignKey('menuItem.id'))
-    menuItem = relationship(MenuItem)
+    menu_id = Column(Integer, ForeignKey('menu_item.id'))
+    menu_item = relationship(MenuItem)
     image_id = Column(Integer, ForeignKey('image.id'))
-    image = relationship(Images)
+    image = relationship(Image)
 
 
 class RestaurantImages(Base):
@@ -132,7 +132,7 @@ class RestaurantImages(Base):
     restaurant_id = Column(Integer, ForeignKey('restaurant.id'))
     restaurant = relationship(Restaurant)
     image_id = Column(Integer, ForeignKey('image.id'))
-    image = relationship(Images)
+    image = relationship(Image)
 
 
 engine = create_engine('sqlite:///myrestaurantmenu.db')

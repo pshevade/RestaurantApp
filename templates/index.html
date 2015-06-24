@@ -50,8 +50,11 @@
                 <li ng-class="{active:isSelected(1)}"><a href ng-click="selectTab(1);">Description</a></li>
                 <li ng-class="{active:isSelected(2)}"><a href ng-click="selectTab(2); getReviews('{{restaurant.id}}')">Reviews</a></li>
                 <li ng-class="{active:isSelected(3)}"><a href ng-click="selectTab(3); getMap('{{restaurant.address}}', '{{restaurant.id}}')">Map</a></li>
+                <li ng-class="{active:isSelected(4)}"><a href ng-click="selectTab(4); getRestaurantImages('{{restaurant.id}}')">Images</a></li>
               </ul>
+              
               <div class="details row align_center">
+                <!-- Description Section -->
                 <div ng-show="isSelected(1)">
                   <p>{{restaurant.description}}</p>
                   <p>The best dish as voted is 
@@ -62,6 +65,8 @@
                   {% endif %} </p>
                   <p class='user_name_text'>Added by: {{restaurant.user.name}}</p>
                 </div>
+
+                <!-- Reviews Section -->
                 <div class="col-md-12" ng-show="isSelected(2)">
                   <div id="show-reviews">
                     <ul class="list-group">
@@ -79,7 +84,8 @@
                       </li>
                     </ul>
                   </div>
-                {% if user_info is not none %}
+                  <!-- Review Section: Add review -->
+                  {% if user_info is not none %}
                   <button class="btn btn-default" type="submit" ng-click="showReviewToggle()" ng-model="add_cancel">[[add_cancel]]</button>
                   <div id="add-review" ng-show="showReviewOn()">
                     <form name="reviewForm" method='post' ng-submit="addNewReview('{{restaurant.id}}')" novalidate>
@@ -101,7 +107,33 @@
                   <p>Please <a href="{{url_for('showLogin')}}">log-in</a> to post a review</p> 
                 {% endif %}
                 </div>
+                
+                <!-- Map Section -->
                 <div ng-show="isSelected(3)" class="subdetails" id="{{restaurant.id}}">
+                </div>
+
+                <!-- Image Section -->
+                <div ng-show="isSelected(4)" ng-controller="CarouselDemoCtrl">
+  				  <div style="height: 305px">
+    			    <carousel interval="myInterval">
+      				  <slide ng-repeat="slide in slides" active="slide.active">
+        				<img ng-src="[[slide.image]]" style="margin:auto;">
+        				<div class="carousel-caption">
+          				  <h4>Slide [[$index]]</h4>
+          				  <p>[[slide.text]]</p>
+        				</div>
+      				  </slide>
+    				</carousel>
+  				  </div>
+  				  <div class="row">
+    				<div class="col-md-6">
+      				  <button type="button" class="btn btn-info" ng-click="addSlide()">Add Slide</button>
+    				</div>
+    				<div class="col-md-6">
+      				  Interval, in milliseconds: <input type="number" class="form-control" ng-model="myInterval">
+      				  <br />Enter a negative number or 0 to stop the interval.
+    				</div>
+  				  </div>
                 </div>
               </div>
             </div> 
@@ -117,6 +149,9 @@
   </div>
 
   <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.3.14/angular.min.js"></script>
+  <script src="../static/js/ui-bootstrap-custom-0.13.0.js"></script> 
+  <script src="//angular-ui.github.io/bootstrap/ui-bootstrap-tpls-0.13.0.js"></script>
+ 
   <script src="../static/js/restaurant_app.js"></script>
 
 
