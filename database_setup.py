@@ -50,16 +50,18 @@ class Image(Base):
     __tablename__ = 'image'
 
     id = Column(Integer, primary_key=True)
-    image_path = Column(String(50), nullable=False)
+    image_title = Column(String(100), nullable=True)
+    image_path = Column(String(250), nullable=False)
     upload_by = Column(Integer, ForeignKey('user.id'))
+
     user = relationship(User)
 
     @property
     def serialize(self):
         return {
+            'image_title': self.image_title,
             'image_path': self.image_path,
             'user_name' : self.user.name,
-            'user_email': self.user.email,
         }
 
 
@@ -109,6 +111,8 @@ class MenuItem(Base):
     restaurant = relationship(Restaurant)
     user_id = Column(Integer, ForeignKey('user.id'))
     user = relationship(User)
+    image_id = Column(Integer, ForeignKey('image.id'))
+    image = relationship(Image)
 
     # We added this serialize function to be able to send JSON objects in a serializable format
     @property
@@ -125,13 +129,13 @@ class MenuItem(Base):
         }
 
 
-class MenuItemImages(Base):
-    __tablename__ = 'menuitem_images'
-    id = Column(Integer, primary_key=True)
-    menu_id = Column(Integer, ForeignKey('menu_item.id'))
-    menu_item = relationship(MenuItem)
-    image_id = Column(Integer, ForeignKey('image.id'))
-    image = relationship(Image)
+# class MenuItemImages(Base):
+#     __tablename__ = 'menuitem_images'
+#     id = Column(Integer, primary_key=True)
+#     menu_id = Column(Integer, ForeignKey('menu_item.id'))
+#     menu_item = relationship(MenuItem)
+#     image_id = Column(Integer, ForeignKey('image.id'))
+#     image = relationship(Image)
 
 
 class RestaurantImages(Base):

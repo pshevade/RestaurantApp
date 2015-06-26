@@ -75,8 +75,15 @@ def restaurantsEdit(restaurant_id):
     # Don't let any unauthenticated users make changes - route them to the login page
     if handle_login(login_session) is False:
         return redirect('/login')
-
+    images_list = []
     restaurant = session.query(Restaurant).filter_by(id = restaurant_id).one()
+    # restaurant_image_pair = session.query(RestaurantImages).filter_by(restaurant_id=restaurant_id).all()
+    # for rest_img in restaurant_image_pair:
+    #     images_list.append(rest_img.image)
+    # restaurant_img_list = session.query(RestaurantImages).filter_by(restaurant_id=restaurant_id).all()
+    # for rest_img in restaurant_img_list:
+    #     images_list.append(rest_img.image)
+
     if request.method == 'POST':
         if len(request.form['address']) > 0:
             restaurant.address = request.form['address']
@@ -190,6 +197,14 @@ def restaurantMenu(restaurant_id):
     # menu_list_entrees = session.query(MenuItem).filter_by(restaurant_id=restaurant_id).filter_by(course="Entree").all()
     # menu_list_desserts = session.query(MenuItem).filter_by(restaurant_id=restaurant_id).filter_by(course="Dessert").all()
     # menu_list
+    # images_list = []
+    # for menu_item in menu_list:
+    #     menu_image_pairs = session.query(MenuItemImages).filter_by(menu_id = menu_item.id).all()
+    #     for menu_image in menu_image_pairs:
+    #         images_list.append(menu_image.image)
+    print("RestaurantMenu - returning the following images")
+    # for img in images_list:
+    #     print(img.image_path)
     user_info = getUserIfExists(login_session)
     return render_template('restaurantmenu.html', restaurant = restaurant, menu_list = menu_list, user_info = user_info)
 
@@ -213,13 +228,29 @@ def menuItemEdit(restaurant_id, menu_id):
     restaurant = session.query(Restaurant).filter_by(id=restaurant_id).one()
     menu_item = session.query(MenuItem).filter_by(id=menu_id).one()
     if request.method == 'POST':
+        print("Inside request method = post")
         # if len(request.form['name']) > 0:
         # 	menu_item.name = request.form['name']
         if len(request.form['price']) > 0:
         	menu_item.price = request.form['price']
+        else:
+            print("Item price is not changed")
         if len(request.form['description']) > 0:
         	menu_item.description = request.form['description']
-        menu_item.course = request.form['course']
+        else:
+            print("Description is not changed")
+        if 'course' in request.form:
+            pass
+        else:
+            print("Course is not changed")    
+        if 'file' in request.files:
+            img_id = createNewImageIfExists(file = request.files['file'], title = request.form['img_name']) 
+            if img_id != -1:
+                menu_item.image_id = img_id
+        session.add(menu_item)
+        session.commit()
+        # print("In menuItemEdit - the img file looks like {}".format(request.files['file']))
+        # # 
         return redirect(url_for('restaurantMenu', restaurant_id = restaurant_id))
     else:
     	user_info = getUserIfExists(login_session)
@@ -240,10 +271,14 @@ def menuItemDelete(restaurant_id, menu_id):
     if handle_login(login_session) is False:
         return redirect('/login')
 
-    restaurant = session.query(Restaurant).filter_by(id=restaurant_id).one()
-    menu_item = session.query(MenuItem).filter_by(id=menu_id).one()
+    restaurant = session.query(Restaurant).filter_by(id=restaurant_id).first()
+    menu_item = session.query(MenuItem).filter_by(id=menu_id).first()
+    image = session.query(Image).filter_by(id=menu_item.image_id).first()
     if request.method == 'POST':
         session.delete(menu_item)
+        session.commit()
+        session.delete(image)
+        session.commit()
         return redirect(url_for('restaurantMenu', restaurant_id = restaurant_id))
     else:
     	user_info = getUserIfExists(login_session)
@@ -270,16 +305,33 @@ def menuItemNew(restaurant_id):
     if request.method == 'POST':
         print("inside post for restaurants news")
 
-        newItem = MenuItem( name = request.form['name'], 
-                            description = request.form['description'], 
-                            price = request.form['price'], 
-                            course = request.form['course'], 
-                            likes=0, 
-                            dislikes=0, 
-                            restaurant_id = restaurant_id,
-                            user_id = login_session['user_id'])
-        session.add(newItem)
-        session.commit()
+        img_id = createNewImageIfExists(file = request.files['file'], title = request.form['img_name'])
+        if img_id != -1:
+            newItem = MenuItem( name = request.form['name'], 
+                                description = request.form['description'], 
+                                price = request.form['price'], 
+                                course = request.form['course'], 
+                                likes=0, 
+                                dislikes=0, 
+                                restaurant_id = restaurant_id,
+                                user_id = login_session['user_id'],
+                                image_id = img_id)
+            session.add(newItem)
+            session.commit()
+    
+        else:
+            print("Error, incorrect file: {}".format(request.files['file']))
+        
+        # if img_id != -1:
+        #     menu_img_exists = session.query(MenuItemImages).filter_by(image_id = img_id).first()
+        #     if menu_img_exists is None or newItem.id != menu_img_exists.menu_id:
+        #         menu_img = MenuItemImages(  menu_id=restaurant_id,
+        #                                     image_id = img_id)
+        #         session.add(menu_img)
+        #         session.commit()
+        # else:
+        #     print("Error, incorrect file: {}".format(request.files['file']))
+
         return redirect(url_for('restaurantMenu', restaurant_id = restaurant_id))
     else:
     	user_info = getUserIfExists(login_session)
@@ -419,41 +471,53 @@ def restaurantImagesJSON(restaurant_id):
     restaurant_img_list = session.query(RestaurantImages).filter_by(restaurant_id=restaurant_id).all()
     for rest_img in restaurant_img_list:
         images_list.append(rest_img.image)
+    menu_items = session.query(MenuItem).filter_by(restaurant_id = restaurant_id).all()
+    for item in menu_items:
+        images_list.append(item.image)
     return jsonify(RestaurantImagesList=[img.serialize for img in images_list])
 
 @app.route('/restaurant/<int:restaurant_id>/image', methods=['GET', 'POST'])
-def uploadFile(restaurant_id):
+def newRestaurantImagePair(restaurant_id):
     print("Inside upload_file ")
     if handle_login(login_session) is False:
         return redirect('/login')
     print("User logged in")
 
     if request.method == 'POST':
-        print("upload_file - POST method")
-        file = request.files['file']
-        if file and allowed_file(file.filename):
-            print("upload_file - filename is ok")
-            filename = secure_filename(file.filename)
-            file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
-            print("The uploaded file path is: {}", file_path)
-            file.save(file_path)
-            image_exists = session.query(Image).filter_by(image_path=file_path).first()
-            if image_exists is None:
-                newimage = Image(image_path=file_path,
-                                 upload_by=login_session['user_id'])
-                session.add(newimage)
-                session.commit()
-                img_id = newimage.id
-            else:
-                img_id = image_exists.id
+        img_id = createNewImageIfExists(file = request.files['file'], title = request.form['img_name'])
+        if img_id != -1:
             rest_img_exists = session.query(RestaurantImages).filter_by(image_id = img_id).first()
             if rest_img_exists is None or restaurant_id != rest_img_exists.restaurant_id:
                 rest_img = RestaurantImages(restaurant_id=restaurant_id,
                                             image_id = img_id)
                 session.add(rest_img)
                 session.commit()
-
+        else:
+            print("Error, incorrect file: {}".format(request.files['file']))
     return redirect(url_for('restaurantsPage'))
+
+
+def createNewImageIfExists(file, title):
+    if file and allowed_file(file.filename):
+        print("upload_file - filename is ok")
+        filename = secure_filename(file.filename)
+        file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+        print("The uploaded file path is: {}", file_path)
+        file.save(file_path)
+        image_exists = session.query(Image).filter_by(image_path=file_path).first()
+        if image_exists is None:
+            newimage = Image(image_title=title,
+                             image_path=file_path,
+                             upload_by=login_session['user_id'])
+            session.add(newimage)
+            session.commit()
+            img_id = newimage.id
+        else:
+            img_id = image_exists.id
+    else: 
+        img_id = -1
+
+    return img_id
 
 
 @app.route('/restaurant/<int:restaurant_id>/<int:img_id>/delete', methods=['GET', 'POST'])

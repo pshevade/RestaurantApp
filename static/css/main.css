@@ -3,7 +3,7 @@
     -moz-box-sizing: border-box;
     -ms-box-sizing: border-box;
     box-sizing: border-box;
-
+/*    border: 1px solid red;*/
 }
 
 .navbar .navbar-default {
@@ -108,6 +108,17 @@ a:hover, a:focus {
 }
 
 .carousel-image {
-    max-height: 50%;
+    height: auto;
     width: 50%;
+}
+
+.menu-item-container {
+    height: 150px;
+    width: 25%;
+    margin: 0 10px 0 10px;
+}
+
+.menu-item-images {
+    height: 150px;
+    width: 150px;
 }

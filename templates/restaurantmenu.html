@@ -7,7 +7,9 @@
     <header class="heading col-md-12">
       <h2>Menu for {{restaurant.name}}</h2>
     </header>
-
+    {% for image in images_list %}
+    {{image.image_title}}
+    {% endfor %}
     <main class="body col-md-12">
         <section class="restaurantPanel col-md-12 col-xs-12">
           <!-- This is where the Restaurant name and tags go -->
@@ -25,7 +27,12 @@
           {% for item in menu_list %}
           {% if item.course == "Appetizer" %}
           <article class="options row align_center">
-              <div class = "col-md-10">
+          <div class="row">
+          	<div class="row">
+        	  	<div class="col-md-3 menu-item-container">
+        	  		<img src="../../{{item.image.image_path}}" class="menu-item-images">
+        	  	</div>
+              <div class = "col-md-7">
               			{{item.name}}
               			<br>
 		                {{item.description}}
@@ -49,7 +56,10 @@
 		            <button type='submit' class='btn btn-danger'>{{item.dislikes}} <span class="glyphicon glyphicon-thumbs-down" aria-hidden="true"></span></button>
 		        </form>
         	  </div>
+        	  
+          </div>
           </article>
+
           {% endif %}
           {% endfor %}
         </section>
@@ -69,7 +79,11 @@
           {% for item in menu_list %}
           {% if item.course == "Entree" %}
           <article class="options row align_center">
-              <div class = "col-md-10">
+            <div class="row">
+              <div class="col-md-3 menu-item-container">
+    	  		<img src="../../{{item.image.image_path}}" class="menu-item-images">
+    	  	  </div>    	  
+              <div class = "col-md-7">
 		                {{item.name}}
               			<br>
 		                {{item.description}}
@@ -93,6 +107,8 @@
 		            <button type='submit' class='btn btn-danger'>{{item.dislikes}} <span class="glyphicon glyphicon-thumbs-down" aria-hidden="true"></span></button>
 		        </form>
         	  </div>
+
+          </div>
           </article>
           {% endif %}
           {% endfor %}
@@ -107,13 +123,18 @@
                 </div>
               </div>
             </div>
+
           </article>
 
           <!-- the dessert items are listed here -->
           {% for item in menu_list %}
           {% if item.course == "Dessert" %}
           <article class="options row align_center">
-              <div class = "col-md-10">
+          	<div class="row">
+        	  	<div class="col-md-3 menu-item-container">
+        	  		<img src="../../{{item.image.image_path}}" class="menu-item-images">
+        	  	</div>
+              <div class = "col-md-7">
 		                {{item.name}}
               			<br>
 		                {{item.description}}
@@ -137,10 +158,13 @@
 		            <button type='submit' class='btn btn-danger'>{{item.dislikes}} <span class="glyphicon glyphicon-thumbs-down" aria-hidden="true"></span></button>
 		        </form>
         	  </div>
-          </article>
+              	  	
+          </div>
           {% endif %}
           {% endfor %}
+          </article>
         </section>
+
         <section class="restaurantPanel col-md-12 col-xs-12">
           <!-- This is where all the beverages go -->
           <article class="row align_center">
@@ -157,7 +181,11 @@
           {% for item in menu_list %}
           {% if item.course == "Beverage" %}
           <article class="options row align_center">
-              <div class = "col-md-10">
+          <div class="row">
+        	  <div class="col-md-3 menu-item-container">
+        	  	<img src="../../{{item.image.image_path}}" class="menu-item-images">
+        	  </div>
+              <div class = "col-md-7">
 		                {{item.name}}
               			<br>
 		                {{item.description}}
@@ -181,9 +209,12 @@
 		            <button type='submit' class='btn btn-danger'>{{item.dislikes}} <span class="glyphicon glyphicon-thumbs-down" aria-hidden="true"></span></button>
 		        </form>
         	  </div>
-          </article>
+          </div>
+
+
           {% endif %}
           {% endfor %}
+          </article>
 		</section>
 
 		<form action="{{url_for('menuItemNew', restaurant_id = restaurant.id)}}" >
