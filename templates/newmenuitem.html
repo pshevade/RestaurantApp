@@ -7,24 +7,23 @@
     <h3>Create new menu item for {{restaurant.name}}</h3>
         </div>
     <div class = "col-md-12 col-xs-12 align_center details form-group">
-        <form action="{{url_for('menuItemNew', restaurant_id=restaurant.id )}}" method = 'POST' enctype="multipart/form-data">
-
-            <p>Name:</p>
-            <input type='text' size='30' name='name'>
-            <p>Description:</p>
-            <input type='text' size='30' name='description'>
-            <p>Price:</p>
-            <input type='text' size='30' name='price'>
-            <p>Course:</p>
-            <input type='radio' name='course' value='Appetizer'>Appetizers<br>
-            <input type='radio' name='course' value='Entree'>Entree<br>
-            <input type='radio' name='course' value='Dessert'>Dessert<br>
-            <input type='radio' name='course' value='Beverage'>Beverage<br>
-
-            <p><input type="file" name="file"></p>
-            <p>Picture Title<input class='form-control' type='text' size='30' name='img_name' placeholder=''></p>
+        <form action="{{url_for('menuItemNew', restaurant_id = restaurant.id)}}" method='POST' enctype="multipart/form-data">
+                <input type="hidden" name="_csrf_token" value="{{ csrf_token() }}">
+                <p>Name<input class='form-control' type='text' size='30' name='name' placeholder='Name'></p>
+                <p>Description<input class='form-control' type='text' size='30' name='description' placeholder='Enter Desription'></p>
+                <p>Price<input class='form-control' type='text' size='30' name='price' placeholder='$x.xx'></p>
+                <p>Course:</p>
+                <input type='radio' name='course' value='Appetizer'>Appetizers<br>
+                <input type='radio' name='course' value='Entree'>Entree<br>
+                <input type='radio' name='course' value='Dessert'>Dessert<br>
+                <input type='radio' name='course' value='Beverage'>Beverage<br>
+                <br>
+                <p>Upload new picture: <input type="file" name="file"></p>
+                <p>Picture Title: <input class='form-control' type='text' size='30' name='img_name' placeholder=''></p>
             
-            <button type='submit' class="btn btn-default btn-lg active" value='Create'>Create</button>
 
-        </form>
+                <p><input type='submit' value='New' class="btn btn-primary pull-left"><p>
+                <p><a href="{{url_for('restaurantMenu', restaurant_id = restaurant.id)}}" class="btn btn-link">Cancel</a>
+                </p></p>
+                </p></form>
  {% endblock %}

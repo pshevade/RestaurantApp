@@ -8,7 +8,7 @@
             <p>Are you sure you want to delete this restaurant?</p>
             <form action="{{url_for('restaurantsDelete', restaurant_id = restaurant.id)}}" method='POST'>
                 <p>
-                    
+                    <input type="hidden" name="_csrf_token" value="{{ csrf_token() }}">
                     <input type='submit' value='Delete' class="btn btn-primary pull-left">
                     <a href="{{url_for('restaurantsPage')}}" class="btn btn-link">Cancel</a>
                 </p>

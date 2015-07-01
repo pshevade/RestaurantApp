@@ -115,6 +115,7 @@ def restaurantsEdit(restaurant_id):
                 if get -  render the "deleterestaurant.html" template 
                             - pass: restaurant obj, user_info,
 """
+@csrf.include
 @app.route('/restaurants/<int:restaurant_id>/delete', methods=['GET','POST'])
 def restaurantsDelete(restaurant_id):
     # If the user isn't logged in, route him to the login page
@@ -142,6 +143,7 @@ def restaurantsDelete(restaurant_id):
                 if get - render the "newrestaurant.html" template 
                             - pass: user_info
 """
+@csrf.include
 @app.route('/restaurants/new', methods=['GET','POST'])
 def restaurantsNew():
     if handle_login(login_session) is False:
@@ -240,7 +242,7 @@ def menuItemEdit(restaurant_id, menu_id):
         else:
             print("Description is not changed")
         if 'course' in request.form:
-            pass
+            menu_item.course = request.form['course']
         else:
             print("Course is not changed")    
         if 'file' in request.files:
@@ -265,6 +267,7 @@ def menuItemEdit(restaurant_id, menu_id):
                             - pass: restaurant obj, menu_item obj, user_info,
                 if post - redirect to the restaurantMenu function to get the (main) page 
 """
+@csrf.include
 @app.route('/restaurants/<int:restaurant_id>/<int:menu_id>/delete', methods=['GET', 'POST'])
 def menuItemDelete(restaurant_id, menu_id):
     #return "This is the Delete menu item page for restaurant {0} and item {1}".format(restaurant_id, menu_id)
@@ -277,8 +280,9 @@ def menuItemDelete(restaurant_id, menu_id):
     if request.method == 'POST':
         session.delete(menu_item)
         session.commit()
-        session.delete(image)
-        session.commit()
+        if image:
+            session.delete(image)
+            session.commit()
         return redirect(url_for('restaurantMenu', restaurant_id = restaurant_id))
     else:
     	user_info = getUserIfExists(login_session)
@@ -294,6 +298,7 @@ def menuItemDelete(restaurant_id, menu_id):
                 if post - redirect to the restaurantMenu function to 
                             get the (main) page 
 """
+@csrf.include
 @app.route('/restaurants/<int:restaurant_id>/new', methods=['GET', 'POST'])
 def menuItemNew(restaurant_id):
     #return "This is the new menu item page for restaurant {0}".format(restaurant_id)
@@ -301,21 +306,28 @@ def menuItemNew(restaurant_id):
         return redirect('/login')
 
     restaurant = session.query(Restaurant).filter_by(id=restaurant_id).one()
-    
+    img_id = 0
     if request.method == 'POST':
         print("inside post for restaurants news")
-
-        img_id = createNewImageIfExists(file = request.files['file'], title = request.form['img_name'])
-        if img_id != -1:
+        # if 'file' in request.files:
+        #     print("image file exists")
+        #     img_id = createNewImageIfExists(file = request.files['file'], title = request.form['img_name'])
+        # if img_id != -1:
+        print("Inside request method = post")
+        # if len(request.form['name']) > 0:
+        #   menu_item.name = request.form['name']    
+        if 'file' in request.files:
+            print("File found")
+            img_id = createNewImageIfExists(file = request.files['file'], title = request.form['img_name']) 
             newItem = MenuItem( name = request.form['name'], 
-                                description = request.form['description'], 
-                                price = request.form['price'], 
-                                course = request.form['course'], 
-                                likes=0, 
-                                dislikes=0, 
-                                restaurant_id = restaurant_id,
-                                user_id = login_session['user_id'],
-                                image_id = img_id)
+                                    description = request.form['description'], 
+                                    price = request.form['price'], 
+                                    course = request.form['course'], 
+                                    likes=0, 
+                                    dislikes=0, 
+                                    restaurant_id = restaurant_id,
+                                    user_id = login_session['user_id'],
+                                    image_id = img_id)
             session.add(newItem)
             session.commit()
     
@@ -347,6 +359,7 @@ def menuItemNew(restaurant_id):
     returns:    if post - Create the review in the database and redirect to the 
                             restaurantMenu function to get the (main) page 
 """
+@csrf.exempt
 @app.route('/restaurants/<int:restaurant_id>/addnewreview', methods=['GET', 'POST'])
 def addNewReview(restaurant_id):
     #restaurant = session.query(Restaurant).filter_by(id = restaurant_id).one()

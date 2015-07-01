@@ -21,6 +21,7 @@ CLIENT_ID = json.loads(open('../client_secrets.json', 'r').read())['web']['clien
     Connect to google and authenticate the user. 
     If the user doesn't exist in database, create the user. 
 """
+@csrf.exempt
 @app.route('/gconnect', methods=['POST'])
 def gconnect():
     print("inside gconnect")
@@ -158,6 +159,7 @@ def revoke_access():
     Log out the user, remove the details from our login_session. 
     The user object is still stored in the database.
 """
+@csrf.include
 @app.route('/log_out')
 def log_out():
     del login_session['credentials']

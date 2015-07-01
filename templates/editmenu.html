@@ -10,11 +10,12 @@
         <div class = "col-md-12 col-xs-12 align_center details form-group">
             <p>Fill out the details of this menu item:</p>
             <form action="{{url_for('menuItemEdit', restaurant_id = restaurant.id, menu_id = menu_item.id)}}" method='POST' enctype="multipart/form-data">
+                <input type="hidden" name="_csrf_token" value="{{ csrf_token() }}">
                 <p>Name<input class='form-control' type='text' size='30' name='name' placeholder='{{menu_item.name}}' disabled></p>
                 <p>Description<input class='form-control' type='text' size='30' name='description' placeholder='{{menu_item.description}}'></p>
                 <p>Price<input class='form-control' type='text' size='30' name='price' placeholder='{{menu_item.price}}'></p>
                 <p>Course:</p>
-                <input type='radio' name='course' value='Appetizers'>Appetizers<br>
+                <input type='radio' name='course' value='Appetizer'>Appetizers<br>
                 <input type='radio' name='course' value='Entree'>Entree<br>
                 <input type='radio' name='course' value='Dessert'>Dessert<br>
                 <input type='radio' name='course' value='Beverage'>Beverage<br>

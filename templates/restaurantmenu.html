@@ -28,10 +28,13 @@
           {% if item.course == "Appetizer" %}
           <article class="options row align_center">
           <div class="row">
-          	<div class="row">
-        	  	<div class="col-md-3 menu-item-container">
-        	  		<img src="../../{{item.image.image_path}}" class="menu-item-images">
-        	  	</div>
+            <div class="col-md-3 menu-item-container">
+              {% if item.image.image_path is defined %}
+              <img src="../../{{item.image.image_path}}" class="menu-item-images">
+              {% else %}
+              <p>No Image Exists</p>
+              {% endif %}  
+            </div>
               <div class = "col-md-7">
               			{{item.name}}
               			<br>
@@ -48,11 +51,13 @@
 
 	          <div class = "col-md-1">
 	        	<form action="{{url_for('voteForItem', item_id = item.id, vote = 1)}}">
+                <input type="hidden" name="_csrf_token" value="{{ csrf_token() }}">
 	            	<button type='submit' class="btn btn-success">{{item.likes}} <span class="glyphicon glyphicon-thumbs-up" aria-hidden="true"></span></button>
 	        	</form>
 	          </div>
 	          <div class = "col-md-1">
 	        	<form action="{{url_for('voteForItem', item_id = item.id, vote = 2)}}">
+                <input type="hidden" name="_csrf_token" value="{{ csrf_token() }}">
 		            <button type='submit' class='btn btn-danger'>{{item.dislikes}} <span class="glyphicon glyphicon-thumbs-down" aria-hidden="true"></span></button>
 		        </form>
         	  </div>
@@ -80,9 +85,13 @@
           {% if item.course == "Entree" %}
           <article class="options row align_center">
             <div class="row">
-              <div class="col-md-3 menu-item-container">
-    	  		<img src="../../{{item.image.image_path}}" class="menu-item-images">
-    	  	  </div>    	  
+            <div class="col-md-3 menu-item-container">
+              {% if item.image.image_path is defined %}
+              <img src="../../{{item.image.image_path}}" class="menu-item-images">
+              {% else %}
+              <p>No Image Exists</p>
+              {% endif %}  
+            </div>   	  
               <div class = "col-md-7">
 		                {{item.name}}
               			<br>
@@ -131,9 +140,14 @@
           {% if item.course == "Dessert" %}
           <article class="options row align_center">
           	<div class="row">
-        	  	<div class="col-md-3 menu-item-container">
-        	  		<img src="../../{{item.image.image_path}}" class="menu-item-images">
-        	  	</div>
+        	  	
+              <div class="col-md-3 menu-item-container">
+                {% if item.image.image_path is defined %}
+                <img src="../../{{item.image.image_path}}" class="menu-item-images">
+                {% else %}
+                <p>No Image Exists</p>
+                {% endif %}  
+              </div>
               <div class = "col-md-7">
 		                {{item.name}}
               			<br>
@@ -160,9 +174,10 @@
         	  </div>
               	  	
           </div>
+
+          </article>
           {% endif %}
           {% endfor %}
-          </article>
         </section>
 
         <section class="restaurantPanel col-md-12 col-xs-12">
@@ -183,7 +198,11 @@
           <article class="options row align_center">
           <div class="row">
         	  <div class="col-md-3 menu-item-container">
+              {% if item.image.image_path is defined %}
         	  	<img src="../../{{item.image.image_path}}" class="menu-item-images">
+              {% else %}
+              <p>No Image Exists</p>
+              {% endif %}  
         	  </div>
               <div class = "col-md-7">
 		                {{item.name}}
@@ -197,7 +216,7 @@
 		                {% if user_info.email == restaurant.user.email %}<a href="{{url_for('menuItemDelete', restaurant_id = restaurant.id, menu_id = item.id)}}">delete</a>
 		                {% endif %}
 		                {% endif %}
-			  </div>
+			        </div>
 
 	          <div class = "col-md-1">
 	        	<form action="{{url_for('voteForItem', item_id = item.id, vote = 1)}}">
@@ -212,9 +231,10 @@
           </div>
 
 
+
+          </article>
           {% endif %}
           {% endfor %}
-          </article>
 		</section>
 
 		<form action="{{url_for('menuItemNew', restaurant_id = restaurant.id)}}" >

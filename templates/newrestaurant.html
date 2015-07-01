@@ -8,6 +8,7 @@
         <div class = "col-md-12 col-xs-12 align_center details form-group">
             <p>Fill out the details of our new restaurant:</p>
             <form action="{{url_for('restaurantsNew')}}" method='post'>
+                <input type="hidden" name="_csrf_token" value="{{ csrf_token() }}">
                 <p>Restaurant Name<input class='form-control' type='text' size='30' name='name' placeholder='Enter Restaurant Name'></p>
                 <p>Address<input class='form-control' type='text' size='30' name='address' placeholder='Approximate Address'></p>
                 <p>Phone Number<input class='form-control' type='text' size='30' name='phone' placeholder='XXX-XXX-XXXX'></p>

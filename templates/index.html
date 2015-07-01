@@ -135,6 +135,7 @@
   				  <div class="col-md-3">
       			    Add a new image:   
       			    <form action="{{url_for('newRestaurantImagePair', restaurant_id=restaurant.id)}}" method="post" enctype="multipart/form-data">
+                <input type="hidden" name="_csrf_token" value="{{ csrf_token() }}">
      			      <p>Picture Title<input class='form-control' type='text' size='30' name='img_name' placeholder=''></p>
                 	  <p><input type="file" name="file">
          			  <br><input type="submit" value="Upload" class="btn btn-info">

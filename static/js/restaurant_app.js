@@ -130,6 +130,7 @@
         this.addReview = function(restaurant_id, review_obj) {
             restaurant_url = '/restaurants/' + restaurant_id + '/addnewreview';
             console.log("Sending HTTP req to ", restaurant_url);
+            console.log("Review Obj, ", review_obj)
             return $http({
                 method  : 'POST',
                 url     : restaurant_url,
