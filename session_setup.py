@@ -9,6 +9,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from database_setup import Base, Restaurant, MenuItem, Tags, Reviews, User, Image, RestaurantImages
 from werkzeug import secure_filename
+from werkzeug.contrib.atom import AtomFeed
 
 app = Flask(__name__)
 csrf = SeaSurf(app)

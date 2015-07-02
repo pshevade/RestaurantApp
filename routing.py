@@ -157,7 +157,6 @@ def restaurantsNew():
                                     phone = request.form['phone'],
                                     web = checkRestaurantURL(request.form['web']),
                                     description = request.form['description'],
-                                    last_update = datetime.utcnow(),
                                     user_id = login_session['user_id'])
         session.add(newRestaurant)
         session.commit()
@@ -489,7 +488,7 @@ def restaurantImagesJSON(restaurant_id):
         images_list.append(item.image)
     return jsonify(RestaurantImagesList=[img.serialize for img in images_list])
 
-@app.route('/restaurant/<int:restaurant_id>/image', methods=['GET', 'POST'])
+@app.route('/restaurants/<int:restaurant_id>/image', methods=['GET', 'POST'])
 def newRestaurantImagePair(restaurant_id):
     print("Inside upload_file ")
     if handle_login(login_session) is False:
@@ -533,7 +532,7 @@ def createNewImageIfExists(file, title):
     return img_id
 
 
-@app.route('/restaurant/<int:restaurant_id>/<int:img_id>/delete', methods=['GET', 'POST'])
+@app.route('/restaurants/<int:restaurant_id>/<int:img_id>/delete', methods=['GET', 'POST'])
 def deleteFile(restaurant_id, img_id):
     if handle_login(login_session) is False:
         return redirect('/login')
@@ -549,3 +548,16 @@ def deleteFile(restaurant_id, img_id):
     # else:
     #     user_info = getUserIfExists(login_session)
     #     return render_template('deletemenu.html', restaurant = restaurant, menu_item = menu_item, user_info = user_info)
+
+
+@app.route('/restaurants/RSS')
+def restaurantListRSS():
+    feed = AtomFeed("Restaurants", feed_url=request.url,
+                    url=request.host_url,
+                    subtitle="List of all restaurants")
+    restaurant_list = session.query(Restaurant)
+    for restaurant in restaurant_list:
+        feed.add(restaurant.name, restaurant.description, content_type='html',
+                 author=restaurant.user.name, url=url_for('restaurantMenu', restaurant_id=restaurant.id), id=restaurant.id,
+                 updated=restaurant.last_update, published=restaurant.last_update)
+    return feed.get_response()

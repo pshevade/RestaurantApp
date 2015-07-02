@@ -30,7 +30,7 @@ class Restaurant(Base):
     phone = Column(String(16), nullable=True)
     web = Column(String(50), nullable=True)
     description = Column(String(500), nullable=True)
-    last_update = Column(DateTime, default=datetime.utcnow())
+    last_update = Column(DateTime, default=datetime.utcnow(), onupdate=datetime.utcnow())
     user_id = Column(Integer, ForeignKey('user.id'))
     user = relationship(User)
 
