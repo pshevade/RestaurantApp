@@ -7,7 +7,7 @@
         </div>
         <div class = "col-md-12 col-xs-12 align_center details form-group">
             <p>Fill out the details of our new restaurant:</p>
-            <form action="{{url_for('restaurantsNew')}}" method='post'>
+            <form action="{{url_for('restaurants_new')}}" method='post'>
                 <input type="hidden" name="_csrf_token" value="{{ csrf_token() }}">
                 <p>Restaurant Name<input class='form-control' type='text' size='30' name='name' placeholder='Enter Restaurant Name'></p>
                 <p>Address<input class='form-control' type='text' size='30' name='address' placeholder='Approximate Address'></p>
@@ -16,7 +16,7 @@
                 <p>Tag Line<input class='form-control' type='text' size='30' name='tag_line' placeholder='comma separated tags'></p>
                 <p>Description<textarea class='form-control' size='30' rows='5' name='description' placeholder='Describe the Restaurant'></textarea></p>
                 <p><input type='submit' value='Create' class="btn btn-primary pull-left"><p>
-                <p><a href="{{url_for('restaurantsPage')}}" class="btn btn-link">Cancel</a>
+                <p><a href="{{url_for('restaurants_page')}}" class="btn btn-link">Cancel</a>
                 </p></p>
                 </p></form>
         </div></div>

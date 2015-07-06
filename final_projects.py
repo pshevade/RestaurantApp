@@ -1,11 +1,13 @@
-# final_projects.py
-from session_setup import *
-from helper import *
-from routing import *
-from authentication import *
+""" Main file to run the restaurant menu app. """
+from flask_setup import app
+import database_setup
+import routing
+import helper
+import session_setup
+import authentication
 
 
 if __name__ == '__main__':
     app.secret_key = 'super_secret_key'
     app.debug = True
-    app.run(host = '0.0.0.0', port = 5000)
+    app.run(host='0.0.0.0', port=5000)

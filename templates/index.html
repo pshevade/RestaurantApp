@@ -19,7 +19,7 @@
             <div class="heading col-md-12">
               <div class="row">
                 <div class="col-md-12 col-xs-12 align_center">
-                  <h3><a href="{{url_for('restaurantMenu', restaurant_id=restaurant.id)}}">{{restaurant.name}}</a></h3>
+                  <h3><a href="{{url_for('restaurant_menu', restaurant_id=restaurant.id)}}">{{restaurant.name}}</a></h3>
                   <p><a href="{{restaurant.web}}" target="_blank">{{restaurant.web}}</a></p>
                 </div>
               </div>
@@ -32,9 +32,9 @@
                 </div>
                 <div class="col-md-2 col-xs-6">
                   {% if user_info is not none %}
-                  <p align="right"><em><a href="{{url_for('restaurantsEdit',restaurant_id=restaurant.id)}}">Edit</a>
+                  <p align="right"><em><a href="{{url_for('restaurants_edit',restaurant_id=restaurant.id)}}">Edit</a>
                   {% if user_info.email == restaurant.user.email %}
-                    &nbsp<a href="{{url_for('restaurantsDelete',restaurant_id=restaurant.id)}}">Delete</a></em>
+                    &nbsp<a href="{{url_for('restaurants_delete',restaurant_id=restaurant.id)}}">Delete</a></em>
                   {% endif %} 
                   </p>
                   {% endif %}
@@ -104,7 +104,7 @@
                     </form>
                   </div>
                 {% else %}
-                  <p>Please <a href="{{url_for('showLogin')}}">log-in</a> to post a review</p> 
+                  <p>Please <a href="{{url_for('show_login')}}">log-in</a> to post a review</p> 
                 {% endif %}
                 </div>
                 
@@ -134,7 +134,7 @@
   				  {% if user_info is not none %}
   				  <div class="col-md-3">
       			    Add a new image:   
-      			    <form action="{{url_for('newRestaurantImagePair', restaurant_id=restaurant.id)}}" method="post" enctype="multipart/form-data">
+      			    <form action="{{url_for('new_restaurant_image_pair', restaurant_id=restaurant.id)}}" method="post" enctype="multipart/form-data">
                 <input type="hidden" name="_csrf_token" value="{{ csrf_token() }}">
      			      <p>Picture Title<input class='form-control' type='text' size='30' name='img_name' placeholder=''></p>
                 	  <p><input type="file" name="file">

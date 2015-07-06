@@ -1,30 +1,31 @@
-# Authentication with OAuth2
-from session_setup import *
-from helper import *
+""" Authentication with OAuth2. """
 
+from flask import url_for, request, redirect, flash, make_response
 from flask import session as login_session
-import random
-import string
+
+from flask_setup import csrf, app
 
 from oauth2client.client import flow_from_clientsecrets
 from oauth2client.client import FlowExchangeError
 import httplib2
 import json
-from flask import make_response
+
+from helper import create_user, get_user_id, get_user_info
+
 import requests
+
 
 CLIENT_ID = json.loads(open('../client_secrets.json', 'r').read())['web']['client_id']
 
 
-""" 
-    gconnect 
-    Connect to google and authenticate the user. 
-    If the user doesn't exist in database, create the user. 
-"""
 @csrf.exempt
 @app.route('/gconnect', methods=['POST'])
 def gconnect():
-    print("inside gconnect")
+    """
+    Connect to google and authenticate the user.
+
+    If the user doesn't exist in database, the user.
+    """
     # Validate state token
     if request.args.get('state') != login_session['state']:
         print("inside validating state token")
@@ -33,8 +34,8 @@ def gconnect():
         print("validated state token")
         return response
     else:
-        print("request args get state %s"%request.args.get('state'))
-        print(" was the same as login session's state %s"%login_session['state'])
+        print("request args get state %s" % request.args.get('state'))
+        print(" was the same as login session's state %s" % login_session['state'])
     # Obtain authorization code
     code = request.data
     print(code)
@@ -80,7 +81,7 @@ def gconnect():
         print "Token's client ID does not match app's."
         response.headers['Content-Type'] = 'application/json'
         return response
-    print ("got to this point")
+    print("got to this point")
     stored_credentials = login_session.get('credentials')
     stored_gplus_id = login_session.get('gplus_id')
     if stored_credentials is not None and gplus_id == stored_gplus_id:
@@ -103,13 +104,12 @@ def gconnect():
     login_session['username'] = data['name']
     login_session['picture'] = data['picture']
     login_session['email'] = data['email']
-    
-    user_id = getUserID(login_session['email'])
+    user_id = get_user_id(login_session['email'])
     if user_id is None:
         print("Creating a new user id")
-        user_id = createUser(login_session)
+        user_id = create_user(login_session)
     print("THe user id is: {}".format(user_id))
-    user = getUserInfo(user_id)
+    user = get_user_info(user_id)
 
     login_session['user_id'] = user_id
 
@@ -119,18 +119,21 @@ def gconnect():
     output += '!</h1>'
     output += '<img src="'
     output += login_session['picture']
-    output += ' " style = "width: 250px; height: 250px;border-radius: 125px;-webkit-border-radius: 125x;-moz-border-radius: 125px;"> '
+    output += ' " style = "width: 250px; height: 250px;border-radius: 125px;" ' \
+              ' "-webkit-border-radius: 125x;-moz-border-radius: 125px;"> '
     flash("you are now logged in as %s" % login_session['username'])
     print "done!"
     revoke_access()
     return output
 
 
-""" 
-    revoke_access 
-    Disconnect from Google - we don't need to be connected to them after we have authenticated and stored the user
-"""
 def revoke_access():
+    """
+    Disconnect from Google.
+
+    we don't need to be connected to them after we have authenticated
+    and stored the user
+    """
     credentials = login_session.get('credentials')
     if credentials is None:
         response = make_response(
@@ -154,18 +157,19 @@ def revoke_access():
         return response
 
 
-""" 
-    log_out 
-    Log out the user, remove the details from our login_session. 
-    The user object is still stored in the database.
-"""
 @csrf.include
 @app.route('/log_out')
 def log_out():
+    """
+    Log out the user, remove the details from our login_session.
+
+    The user object is still stored in the database. When the user returns,
+    we will reuse this object instead of creating a new record.
+    """
     del login_session['credentials']
     del login_session['gplus_id']
     del login_session['username']
     del login_session['email']
     del login_session['picture']
 
-    return redirect(url_for('restaurantsPage'))
+    return redirect(url_for('restaurants_page'))

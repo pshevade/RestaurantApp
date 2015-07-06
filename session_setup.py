@@ -1,27 +1,13 @@
-# session_setup
-# Import Flask and SQLAlchemy files and create the session object
-
-import os
-from flask import Flask, render_template, url_for, request, redirect, flash, jsonify
-from flask.ext.seasurf import SeaSurf
+""" SQL Alchemy Session setup. """
 
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-from database_setup import Base, Restaurant, MenuItem, Tags, Reviews, User, Image, RestaurantImages
-from werkzeug import secure_filename
-from werkzeug.contrib.atom import AtomFeed
+from database_setup import Base
 
-app = Flask(__name__)
-csrf = SeaSurf(app)
-
-
-UPLOAD_FOLDER = 'static/images/uploads/'
-ALLOWED_EXTENSIONS = set(['png', 'jpg', 'jpeg', 'PNG', 'JPG', 'JPEG'])
-
-app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
-
+# Create the SQLite database
 engine = create_engine('sqlite:///myrestaurantmenu.db')
 Base.metadata.bind = engine
 
+# Create an sqlalchemy session
 DBSession = sessionmaker(bind=engine)
 session = DBSession()

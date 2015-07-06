@@ -7,7 +7,7 @@
     <h3>Create new menu item for {{restaurant.name}}</h3>
         </div>
     <div class = "col-md-12 col-xs-12 align_center details form-group">
-        <form action="{{url_for('menuItemNew', restaurant_id = restaurant.id)}}" method='POST' enctype="multipart/form-data">
+        <form action="{{url_for('menu_item_new', restaurant_id = restaurant.id)}}" method='POST' enctype="multipart/form-data">
                 <input type="hidden" name="_csrf_token" value="{{ csrf_token() }}">
                 <p>Name<input class='form-control' type='text' size='30' name='name' placeholder='Name'></p>
                 <p>Description<input class='form-control' type='text' size='30' name='description' placeholder='Enter Desription'></p>
@@ -23,7 +23,7 @@
             
 
                 <p><input type='submit' value='New' class="btn btn-primary pull-left"><p>
-                <p><a href="{{url_for('restaurantMenu', restaurant_id = restaurant.id)}}" class="btn btn-link">Cancel</a>
+                <p><a href="{{url_for('restaurant_menu', restaurant_id = restaurant.id)}}" class="btn btn-link">Cancel</a>
                 </p></p>
                 </p></form>
  {% endblock %}

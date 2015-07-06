@@ -40,23 +40,25 @@
               			<br>
 		                {{item.description}}
 		                <br>
+                    ${{item.price}}
+                    <br>
 		                <p class='user_name_text'>Added by: {{item.user.name}}</p> 
 		                <!-- If the user is logged in, let him edit the item, and if the user created the item let them delete it -->
 		                {% if user_info is not none %}
-		                <a href="{{url_for('menuItemEdit', restaurant_id = restaurant.id, menu_id = item.id)}}">edit</a> 
-		                {% if user_info.email == restaurant.user.email %}<a href="{{url_for('menuItemDelete', restaurant_id = restaurant.id, menu_id = item.id)}}">delete</a>
+		                <a href="{{url_for('menu_item_edit', restaurant_id = restaurant.id, menu_id = item.id)}}">edit</a> 
+		                {% if user_info.email == restaurant.user.email %}<a href="{{url_for('menu_item_delete', restaurant_id = restaurant.id, menu_id = item.id)}}">delete</a>
 		                {% endif %}
 		                {% endif %}
 			  </div>
 
 	          <div class = "col-md-1">
-	        	<form action="{{url_for('voteForItem', item_id = item.id, vote = 1)}}">
+	        	<form action="{{url_for('vote_for_item', item_id = item.id, vote = 1)}}">
                 <input type="hidden" name="_csrf_token" value="{{ csrf_token() }}">
 	            	<button type='submit' class="btn btn-success">{{item.likes}} <span class="glyphicon glyphicon-thumbs-up" aria-hidden="true"></span></button>
 	        	</form>
 	          </div>
 	          <div class = "col-md-1">
-	        	<form action="{{url_for('voteForItem', item_id = item.id, vote = 2)}}">
+	        	<form action="{{url_for('vote_for_item', item_id = item.id, vote = 2)}}">
                 <input type="hidden" name="_csrf_token" value="{{ csrf_token() }}">
 		            <button type='submit' class='btn btn-danger'>{{item.dislikes}} <span class="glyphicon glyphicon-thumbs-down" aria-hidden="true"></span></button>
 		        </form>
@@ -97,22 +99,24 @@
               			<br>
 		                {{item.description}}
 		                <br>
+                    ${{item.price}}
+                    <br>
 		                <p class='user_name_text'>Added by: {{item.user.name}}</p> 
 		                <!-- If the user is logged in, let him edit the item, and if the user created the item let them delete it -->
 		                {% if user_info is not none %}
-		                <a href="{{url_for('menuItemEdit', restaurant_id = restaurant.id, menu_id = item.id)}}">edit</a> 
-		                {% if user_info.email == restaurant.user.email %}<a href="{{url_for('menuItemDelete', restaurant_id = restaurant.id, menu_id = item.id)}}">delete</a>
+		                <a href="{{url_for('menu_item_edit', restaurant_id = restaurant.id, menu_id = item.id)}}">edit</a> 
+		                {% if user_info.email == restaurant.user.email %}<a href="{{url_for('menu_item_delete', restaurant_id = restaurant.id, menu_id = item.id)}}">delete</a>
 		                {% endif %}
 		                {% endif %}
 			  </div>
 
 	          <div class = "col-md-1">
-	        	<form action="{{url_for('voteForItem', item_id = item.id, vote = 1)}}">
+	        	<form action="{{url_for('vote_for_item', item_id = item.id, vote = 1)}}">
 	            	<button type='submit' class="btn btn-success">{{item.likes}} <span class="glyphicon glyphicon-thumbs-up" aria-hidden="true"></span></button>
 	        	</form>
 	          </div>
 	          <div class = "col-md-1">
-	        	<form action="{{url_for('voteForItem', item_id = item.id, vote = 2)}}">
+	        	<form action="{{url_for('vote_for_item', item_id = item.id, vote = 2)}}">
 		            <button type='submit' class='btn btn-danger'>{{item.dislikes}} <span class="glyphicon glyphicon-thumbs-down" aria-hidden="true"></span></button>
 		        </form>
         	  </div>
@@ -153,22 +157,24 @@
               			<br>
 		                {{item.description}}
 		                <br>
+                    ${{item.price}}
+                    <br>
 		                <p class='user_name_text'>Added by: {{item.user.name}}</p> 
 		                <!-- If the user is logged in, let him edit the item, and if the user created the item let them delete it -->
 		                {% if user_info is not none %}
-		                <a href="{{url_for('menuItemEdit', restaurant_id = restaurant.id, menu_id = item.id)}}">edit</a> 
-		                {% if user_info.email == restaurant.user.email %}<a href="{{url_for('menuItemDelete', restaurant_id = restaurant.id, menu_id = item.id)}}">delete</a>
+		                <a href="{{url_for('menu_item_edit', restaurant_id = restaurant.id, menu_id = item.id)}}">edit</a> 
+		                {% if user_info.email == restaurant.user.email %}<a href="{{url_for('menu_item_delete', restaurant_id = restaurant.id, menu_id = item.id)}}">delete</a>
 		                {% endif %}
 		                {% endif %}
 			  </div>
 
 	          <div class = "col-md-1">
-	        	<form action="{{url_for('voteForItem', item_id = item.id, vote = 1)}}">
+	        	<form action="{{url_for('vote_for_item', item_id = item.id, vote = 1)}}">
 	            	<button type='submit' class="btn btn-success">{{item.likes}} <span class="glyphicon glyphicon-thumbs-up" aria-hidden="true"></span></button>
 	        	</form>
 	          </div>
 	          <div class = "col-md-1">
-	        	<form action="{{url_for('voteForItem', item_id = item.id, vote = 2)}}">
+	        	<form action="{{url_for('vote_for_item', item_id = item.id, vote = 2)}}">
 		            <button type='submit' class='btn btn-danger'>{{item.dislikes}} <span class="glyphicon glyphicon-thumbs-down" aria-hidden="true"></span></button>
 		        </form>
         	  </div>
@@ -209,22 +215,24 @@
               			<br>
 		                {{item.description}}
 		                <br>
+                    ${{item.price}}
+                    <br>
 		                <p class='user_name_text'>Added by: {{item.user.name}}</p> 
 		                <!-- If the user is logged in, let him edit the item, and if the user created the item let them delete it -->
 		                {% if user_info is not none %}
-		                <a href="{{url_for('menuItemEdit', restaurant_id = restaurant.id, menu_id = item.id)}}">edit</a> 
-		                {% if user_info.email == restaurant.user.email %}<a href="{{url_for('menuItemDelete', restaurant_id = restaurant.id, menu_id = item.id)}}">delete</a>
+		                <a href="{{url_for('menu_item_edit', restaurant_id = restaurant.id, menu_id = item.id)}}">edit</a> 
+		                {% if user_info.email == restaurant.user.email %}<a href="{{url_for('menu_item_delete', restaurant_id = restaurant.id, menu_id = item.id)}}">delete</a>
 		                {% endif %}
 		                {% endif %}
 			        </div>
 
 	          <div class = "col-md-1">
-	        	<form action="{{url_for('voteForItem', item_id = item.id, vote = 1)}}">
+	        	<form action="{{url_for('vote_for_item', item_id = item.id, vote = 1)}}">
 	            	<button type='submit' class="btn btn-success">{{item.likes}} <span class="glyphicon glyphicon-thumbs-up" aria-hidden="true"></span></button>
 	        	</form>
 	          </div>
 	          <div class = "col-md-1">
-	        	<form action="{{url_for('voteForItem', item_id = item.id, vote = 2)}}">
+	        	<form action="{{url_for('vote_for_item', item_id = item.id, vote = 2)}}">
 		            <button type='submit' class='btn btn-danger'>{{item.dislikes}} <span class="glyphicon glyphicon-thumbs-down" aria-hidden="true"></span></button>
 		        </form>
         	  </div>
@@ -237,7 +245,7 @@
           {% endfor %}
 		</section>
 
-		<form action="{{url_for('menuItemNew', restaurant_id = restaurant.id)}}" >
+		<form action="{{url_for('menu_item_new', restaurant_id = restaurant.id)}}" >
 	  		<button type='submit' class="btn btn-default btn-lg active" value="New Menu Item">Create New Item</button>
 		</form>
     </main>

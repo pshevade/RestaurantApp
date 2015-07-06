@@ -1,20 +1,23 @@
 # helper.py
-from session_setup import *
+from session_setup import session
+from database_setup import User, Restaurant, MenuItem, \
+    Image, Tags, RestaurantTags, Reviews
 from urlparse import urlparse
 
-""" 
-    getTopMenuItems
-    Return the most voted item for each restaurant 
+
+def get_top_menu_items(restaurant_list):
+    """
+    Return the most voted item for each restaurant.
+
     arguments:  restaurant_list (list of all restaurants)
-    returns:    get the menu item list for each restaurant, find the score for each item, 
-                return the top voted item for each restaurant 
-"""
-def getTopMenuItems(restaurant_list):
+    returns:    get the menu item list for each restaurant, find the score
+                for each item, return the top voted item for each restaurant
+    """
     top_items_list = {}
     score = 0
     appended = 0
     for restaurant in restaurant_list:
-        menu_list = session.query(MenuItem).filter_by(restaurant_id = restaurant.id)
+        menu_list = session.query(MenuItem).filter_by(restaurant_id=restaurant.id)
         for item in menu_list:
             if item.likes - item.dislikes > score:
                 top_items_list[restaurant.name] = item.name
@@ -24,42 +27,44 @@ def getTopMenuItems(restaurant_list):
                 top_items_list[restaurant.name] = ""
         appended = 0
         score = 0
-
     return top_items_list
 
 
-""" 
-    createUser
-    create a user object in the database - store the username, email, and picture
+def create_user(login_session):
+    """
+    create a user object in the database & store the username, email, picture.
+
     arguments:  login_session object
-    returns:    the user id for the newly created user. 
-"""
-def createUser(login_session):
-    newUser = User(name=login_session['username'], email=login_session['email'], picture=login_session['picture'])
-    session.add(newUser)
+    returns:    the user id for the newly created user.
+    """
+    new_user = User(name=login_session['username'],
+                    email=login_session['email'],
+                    picture=login_session['picture'])
+    session.add(new_user)
     session.commit()
     user = session.query(User).filter_by(email=login_session['email']).one()
     return user.id
 
 
-""" 
-    getUserInfo
-    return the user's object from the database, else return none
+def get_user_info(user_id):
+    """
+    return the user's object from the database, else return none.
+
     arguments:  user id
-    returns:    Find the user in the database and return the first instance of that user id 
-"""
-def getUserInfo(user_id):
+    returns:    Find the user in the database and return the first instance of
+                that user id
+    """
     user = session.query(User).filter_by(id=user_id).first()
     return user
 
 
-""" 
-    getUserID
-    Find the user id based on the email 
+def get_user_id(email):
+    """
+    Find the user id based on the email.
+
     arguments:  the user's email
-    returns:    return the user id or None if not found 
-"""
-def getUserID(email):
+    returns:    return the user id or None if not found
+    """
     try:
         user = session.query(User).filter_by(email=email).first()
         return user.id
@@ -67,45 +72,162 @@ def getUserID(email):
         return None
 
 
-""" 
-    getUserIfExists
-    return the user's info (call the getUserInfo function) if the user exists, else none
+def get_user_if_exists(login_session):
+    """
+    return the user's info (call the get_user_info fn) if user exists.
+
     arguments:  login_session object
-    returns:    return the user's info if the user exists, else return none 
-"""
-def getUserIfExists(login_session):
+    returns:    return the user's info if the user exists, else return none
+    """
     user_info = None
     if 'username' in login_session:
-        user_ID = getUserID(login_session['email'])
-        user_info = getUserInfo(user_ID)
+        user_ID = get_user_id(login_session['email'])
+        user_info = get_user_info(user_ID)
 
     return user_info
 
 
-""" 
-    handle_login
-    Check if the user's email is in the login_session
+def handle_login(login_session):
+    """
+    Check if the user's email is in the login_session.
+
     arguments:  login_session
     returns:    True is the user's email is in the login_session
-"""
-def handle_login(login_session):
+    """
     # To debug, comment out the next if statement
     if 'email' not in login_session:
         return False
     return True
 
 
-def checkRestaurantURL(link):
+def check_restaurant_URL(link):
+    """
+    Check if the restaurant URL has a valid scheme.
+
+    Else add the "http://"
+    arguemnts:  link - the url
+    returns:    updated link
+    """
     print("The Restaurant link before any parsing, raw is: {}".format(link))
     link_url_obj = urlparse(link)
     if link_url_obj.scheme is '':
-        link = 'http://'+ link
-        print("checkRestaurantURL - updated the link - the link scheme is: {}".format(link))
+        link = 'http://' + link
+        print("check_restaurant_URL - updated the link - the link scheme is: {}".format(link))
     else:
-        print("checkRestaurantURL - the link scheme is: {}".format(link_url_obj.scheme))
-    return link 
+        print("check_restaurant_URL - the link scheme is: {}".format(link_url_obj.scheme))
+    return link
 
 
 def allowed_file(filename):
-    return '.' in filename and \
-            filename.rsplit('.', 1)[1] in ALLOWED_EXTENSIONS
+    """ Check if file type is in the allowed list """
+    return '.' in filename and filename.rsplit('.', 1)[1] in ALLOWED_EXTENSIONS
+
+
+def create_new_image_if_not_exists(file, title):
+    """
+    create a new image if it doesn't already exist.
+
+    arguemnts:  file object, title of the image
+    returns:    image id, either a new id or existing image id (-1 if error)
+    """
+    if file and allowed_file(file.filename):
+        print("upload_file - filename is ok")
+        filename = secure_filename(file.filename)
+        file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+        print("The uploaded file path is: {}", file_path)
+        file.save(file_path)
+        image_exists = session.query(Image).filter_by(image_path=file_path).first()
+        if image_exists is None:
+            newimage = Image(image_title=title,
+                             image_path=file_path,
+                             upload_by=login_session['user_id'])
+            session.add(newimage)
+            session.commit()
+            img_id = newimage.id
+        else:
+            img_id = image_exists.id
+    else:
+        # If image error,
+        img_id = -1
+    return img_id
+
+
+def delete_restaurant(restaurant_id):
+    """
+    Delete a restaurant entry.
+
+    Cascade through and remove all related entries first, including the
+    images, menu_items, revies, tags.
+    """
+    try:
+        restaurant = session.qery(Restaurant).filter_by(id=restaurant_id).first()
+        menu_items = session.query(MenuItem).filter_by(restaurant_id=restaurant_id).all()
+        for item in menu_items:
+            if delete_menu_item(item.id):
+                print("Deleted menu item '{0}' successfully: restaurant '{1}'".format(item.id, restaurant_id))
+        images_list = session.query(Image).filter_by(restaurant_id=restaurant_id).all()
+        for image in images_list:
+            if delete_image(image.id):
+                print("Deleted image '{0}' successfully: restaurant '{1}'".format(image.id, restaurant_id))
+        reviews_list = session.query(Reviews).filter_by(restaurant_id=restaurant.id).all()
+        for review in reviews_list:
+            if delete_review(review.id):
+                print("Deleted review '{0}' successfully: restaurant '{1}'".format(review.id, restuarant_id))
+        tag_list = session.query(RestaurantTags).filter_by(restaurant_id=restaurant_id).all()
+        for tag in tag_list:
+            delete_tag(tag.tag_id)
+        session.delete(restaurant)
+        session.commit()
+        return 1
+    except:
+        return 0
+
+
+def delete_tag(tag_id):
+    """ Delete a tag from the database, if exists. """
+    try:
+        tag = session.query(Tags).filter_by(id=tag_id).first()
+        session.delete(tag)
+        session.commit()
+        return 1
+    except:
+        return 0
+
+
+def delete_review(review_id):
+    """ Delete a review from the database, if exists. """
+    # Find the review
+    try:
+        review = session.query(Reviews).filter_by(id=review_id).first()
+        session.delete(review)
+        session.commit()
+        return 1
+    except:
+        return 0
+
+
+def delete_menu_item(menu_id):
+    """ Delete a menu from the database, if exists. """
+    try:
+        menu_item = session.query(MenuItem).filter_by(id=menu_id).first()
+        # Delete associated images
+        if delete_image(menu_item.image_id):
+            print("Deleted menu item images: menu item '{}'".format(menu_item.id))
+        # Delete menu item
+        session.delete(menu_item)
+        session.commit()
+        return 1
+    except:
+        return 0
+
+
+def delete_image(image_id):
+    """ Delete the image from the database, if exists. """
+    try:
+        # Find image to delete
+        image = session.query(Image).filter_by(id=image_id).first()
+        session.delete(image)
+        session.commit()
+        return 1
+    except:
+        return 0
