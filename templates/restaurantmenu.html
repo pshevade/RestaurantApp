@@ -52,14 +52,14 @@
               </div>
             <!-- <form action="{{url_for('vote_for_item', item_id = item.id, vote = 1)}}">
              -->
-
+             {% if user_info is not none %}
             <div class = "col-md-1">  
               <button type='submit' class="btn btn-success"  ng-click="postVote(1)">[[likes]] <span class="glyphicon glyphicon-thumbs-up" aria-hidden="true"></span></button>
             </div>
             <div class = "col-md-1">
               <button type='submit' class='btn btn-danger' ng-click="postVote(2)">[[dislikes]] <span class="glyphicon glyphicon-thumbs-down" aria-hidden="true"></span></button>
             </div>
-            
+            {% endif %}
           </div>
           </article>
 
@@ -107,14 +107,14 @@
               </div>
             <!-- <form action="{{url_for('vote_for_item', item_id = item.id, vote = 1)}}">
              -->
-
+             {% if user_info is not none %}
             <div class = "col-md-1">  
               <button type='submit' class="btn btn-success"  ng-click="postVote(1)">[[likes]] <span class="glyphicon glyphicon-thumbs-up" aria-hidden="true"></span></button>
             </div>
             <div class = "col-md-1">
               <button type='submit' class='btn btn-danger' ng-click="postVote(2)">[[dislikes]] <span class="glyphicon glyphicon-thumbs-down" aria-hidden="true"></span></button>
             </div>
-            
+            {% endif %}
           </div>
           </article>
           {% endif %}
@@ -162,14 +162,14 @@
               </div>
             <!-- <form action="{{url_for('vote_for_item', item_id = item.id, vote = 1)}}">
              -->
-
+            {% if user_info is not none %}
             <div class = "col-md-1">  
               <button type='submit' class="btn btn-success"  ng-click="postVote(1)">[[likes]] <span class="glyphicon glyphicon-thumbs-up" aria-hidden="true"></span></button>
             </div>
             <div class = "col-md-1">
               <button type='submit' class='btn btn-danger' ng-click="postVote(2)">[[dislikes]] <span class="glyphicon glyphicon-thumbs-down" aria-hidden="true"></span></button>
             </div>
-            
+            {% endif %}
           </div>
           </article>
           {% endif %}
@@ -217,14 +217,14 @@
               </div>
             <!-- <form action="{{url_for('vote_for_item', item_id = item.id, vote = 1)}}">
              -->
-
+             {% if user_info is not none %}
             <div class = "col-md-1">  
               <button type='submit' class="btn btn-success"  ng-click="postVote(1)">[[likes]] <span class="glyphicon glyphicon-thumbs-up" aria-hidden="true"></span></button>
             </div>
             <div class = "col-md-1">
               <button type='submit' class='btn btn-danger' ng-click="postVote(2)">[[dislikes]] <span class="glyphicon glyphicon-thumbs-down" aria-hidden="true"></span></button>
             </div>
-            
+            {% endif %}
           </div>
           </article>
           {% endif %}

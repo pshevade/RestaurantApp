@@ -121,7 +121,7 @@ def gconnect():
     output += login_session['picture']
     output += ' " style = "width: 250px; height: 250px;border-radius: 125px;" ' \
               ' "-webkit-border-radius: 125x;-moz-border-radius: 125px;"> '
-    flash("you are now logged in as %s" % login_session['username'])
+    flash("You are now logged in as %s" % login_session['username'])
     print "done!"
     revoke_access()
     return output
@@ -171,5 +171,6 @@ def log_out():
     del login_session['username']
     del login_session['email']
     del login_session['picture']
+    flash("Logged out!")
 
     return redirect(url_for('restaurants_page'))

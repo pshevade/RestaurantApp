@@ -12,6 +12,18 @@
     {% endif %} 
     </div>
    </nav>
+  <!--MESSAGE FLASHING EXAMPLE -->
+  {% with messages = get_flashed_messages() %}
+  {% if messages %}
+
+    <ul>
+    {% for message in messages %}
+      <li><strong>{{message}}</strong></li>
+    {% endfor %}
+    </ul>
+  {% endif %}
+  {% endwith %}
+   
 <div class ="container">
     <div class="col-md-12 col-xs-12 restaurantPanel">
         <div class="row align_center">

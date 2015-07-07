@@ -5,9 +5,10 @@
 """
 
 from session_setup import session
+from flask import flash
 from flask_setup import ALLOWED_EXTENSIONS, app
 from database_setup import User, Restaurant, MenuItem, \
-    Image, Tags, RestaurantTags, Reviews, RestaurantImages
+    Image, Tags, RestaurantTags, Reviews, RestaurantImages, UserVotes
 from urlparse import urlparse
 from werkzeug import secure_filename
 from authentication import login_session
@@ -172,6 +173,7 @@ def delete_restaurant(restaurant_id):
     print("In delete restaurant")
     # try:
     restaurant = session.query(Restaurant).filter_by(id=restaurant_id).first()
+    name = restaurant.name
     print("The restaurant deleted is: {}".format(restaurant.name))
     menu_items = session.query(MenuItem).filter_by(restaurant_id=restaurant_id).all()
     print("deleting menu")
@@ -205,6 +207,7 @@ def delete_restaurant(restaurant_id):
     print("got to the place where we will actually delete restaurant")
     session.delete(restaurant)
     session.commit()
+    flash("Restaurant {} deleted!".format(name))
     return 1
     # except:
     #     return 0
@@ -237,12 +240,18 @@ def delete_menu_item(menu_id):
     """ Delete a menu from the database, if exists. """
     try:
         menu_item = session.query(MenuItem).filter_by(id=menu_id).first()
+        name = menu_item.name
+        item_votes = session.query(UserVotes).filter_by(menu_id=menu_item.id).all()
         # Delete associated images
         if delete_image(menu_item.image_id):
             print("Deleted menu item images: menu item '{}'".format(menu_item.id))
         # Delete menu item
+        for vote in item_votes:
+            session.delete(vote)
+            session.commit()
         session.delete(menu_item)
         session.commit()
+        flash("Menu item {} deleted".format(name))
         print("successfully leaving delete_menu_item")
         return 1
     except:

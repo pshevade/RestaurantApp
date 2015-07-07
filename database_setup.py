@@ -160,6 +160,20 @@ class MenuItem(Base):
         }
 
 
+class UserVotes(Base):
+
+    """ User votes collection. """
+
+    __tablename__ = 'user_votes'
+
+    id = Column(Integer, primary_key=True)
+    user_id = Column(Integer, ForeignKey('user.id'))
+    user = relationship(User)
+    menu_id = Column(Integer, ForeignKey('menu_item.id'))
+    menu_item = relationship(MenuItem)
+    vote = Column(Integer, default=0)
+
+
 class RestaurantImages(Base):
 
     """ Restaurant & Image pairs stored here. Many-to-many relationship. """

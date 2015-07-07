@@ -3,11 +3,13 @@
 THis file has the routing functions for all the API endpoints
 
 """
-from flask import url_for, request, jsonify
+from flask import url_for, request, jsonify, redirect
 from flask_setup import app, csrf
+from authentication import login_session
 from werkzeug.contrib.atom import AtomFeed
 from session_setup import session
-from database_setup import Restaurant, MenuItem, Reviews, RestaurantImages
+from database_setup import Restaurant, MenuItem, Reviews, User, RestaurantImages, UserVotes
+from helper import handle_login
 
 
 @csrf.exempt
@@ -20,17 +22,52 @@ def vote_for_item(item_id, vote):
     arguments:  item_id (for that particular item), vote (1 for yes, 2 for no)
     returns:    increment/decrement the item's rating - and redirect to restaurant_menu
     """
-    # if handle_login(login_session) is False:
-    #     return redirect('/login')
+    if handle_login(login_session) is False:
+        return redirect('/login')
+
+    user = session.query(User).filter_by(email=login_session['email']).first()
     item = session.query(MenuItem).filter_by(id=item_id).one()
+    print("item id is: {}".format(item.id))
+    # check if user has voted on the item
+    update_vote = False
+    user_vote = session.query(UserVotes).filter_by(user_id=user.id, menu_id=item.id).first()
     if request.method == 'POST':
-        if vote == 1:
-            item.likes += 1
-        elif vote == 2:
-            item.dislikes += 1
-        session.add(item)
-        session.commit()
-    # return redirect(url_for('restaurant_menu', restaurant_id=item.restaurant_id))
+        print("The vote is: {}".format(vote))
+        if user_vote is not None:
+            print("The user's previous vote was: {}".format(user_vote.vote))
+            if user_vote.vote != vote:
+                print("Users vote is now different!")
+                if vote == 1:
+                    print("Since user now voted for 'like'")
+                    # We will add one to likes below when we update vote
+                    item.dislikes -= 1
+                elif vote == 2:
+                    print("Since user now voted for 'dislike'")
+                    item.likes -= 1
+                    # we will add to dislikes below when we update vote
+                user_vote.vote = vote
+                update_vote = True
+            elif user_vote.vote == vote:
+                update_vote = False
+        elif user_vote is None:
+            user_vote = UserVotes(user_id=user.id,
+                                  menu_id=item.id,
+                                  vote=vote)
+            update_vote = True
+
+        # Update the vote
+        if update_vote:
+            if vote == 1:
+                item.likes += 1
+            elif vote == 2:
+                item.dislikes += 1
+            session.add(item)
+            session.commit()
+            session.add(user_vote)
+            session.commit()
+        else:
+            pass
+
     return jsonify(Item=item.serialize)
 
 

@@ -7,7 +7,7 @@ import random
 import string
 from datetime import datetime
 
-from flask import render_template, url_for, request, redirect
+from flask import render_template, url_for, request, redirect, flash
 from flask_setup import app, csrf
 from session_setup import session
 
@@ -91,7 +91,7 @@ def restaurants_edit(restaurant_id):
         if len(request.form['tag_line']) > 0:
             tag_line = request.form['tag_line']
             tag_list = tag_line.split(',')
-            helper.delete_restaurant_tag_pairs(restaurant.id)   
+            helper.delete_restaurant_tag_pairs(restaurant.id)
             for tag in tag_list:
                 helper.add_tag_if_not_exists(tag, restaurant.id)
         if len(request.form['description']) > 0:
@@ -102,6 +102,7 @@ def restaurants_edit(restaurant_id):
         print("inside post for restaurants edit")
         session.add(restaurant)
         session.commit()
+        flash("Restaurant {} edited!".format(restaurant.name))
         return redirect(url_for('restaurants_page'))
     else:
         # Get user info if the user is signed in to render edit form
@@ -164,24 +165,28 @@ def restaurants_new():
 
     if request.method == 'POST':
         print("inside post for restaurants news")
-        new_restaurant = Restaurant(name=request.form['name'],
-                                    address=request.form['address'],
-                                    phone=request.form['phone'],
-                                    web=helper.check_restaurant_URL(request.form['web']),
-                                    description=request.form['description'],
-                                    user_id=login_session['user_id'])
-        session.add(new_restaurant)
-        session.commit()
+        if len(request.form['name']) > 0:
+            new_restaurant = Restaurant(name=request.form['name'],
+                                        address=request.form['address'],
+                                        phone=request.form['phone'],
+                                        web=helper.check_restaurant_URL(request.form['web']),
+                                        description=request.form['description'],
+                                        user_id=login_session['user_id'])
+            session.add(new_restaurant)
+            session.commit()
+            flash("New restaurant created - {}".format(new_restaurant.name))
         # new_rest_obj = session.query(Restaurant).filter_by
-        tag_line = request.form['tag_line']
-        tag_list = tag_line.split(',')
-        for tag in tag_list:
-            helper.add_tag_if_not_exists(tag, new_restaurant.id)
+            tag_line = request.form['tag_line']
+            tag_list = tag_line.split(',')
+            for tag in tag_list:
+                helper.add_tag_if_not_exists(tag, new_restaurant.id)
 
-        return redirect(url_for('restaurants_page'))
-    else:
-        user_info = helper.get_user_if_exists(login_session)
-        return render_template('newrestaurant.html', user_info=user_info)
+            return redirect(url_for('restaurants_page'))
+        else:
+            flash("Incorrect Restaurant details - Please include a name!")
+
+    user_info = helper.get_user_if_exists(login_session)
+    return render_template('newrestaurant.html', user_info=user_info)
 
 
 """
@@ -253,6 +258,7 @@ def menu_item_edit(restaurant_id, menu_id):
                 menu_item.image_id = img_id
         session.add(menu_item)
         session.commit()
+        flash("Menu item {} edited!".format(menu_item.name))
         return redirect(url_for('restaurant_menu', restaurant_id=restaurant_id))
     else:
         user_info = helper.get_user_if_exists(login_session)
@@ -330,6 +336,7 @@ def menu_item_new(restaurant_id):
                                 image_id=img_id)
             session.add(new_item)
             session.commit()
+            flash("New Menu Item {} created!".format(new_item.name))
         else:
             print("Error, incorrect file: {}".format(request.files['file']))
 
