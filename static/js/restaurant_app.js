@@ -6,6 +6,45 @@
         $interpolateProvider.endSymbol(']]');
     }])
 
+    /* VoteController -
+    */
+
+    app.controller("VoteController", function($scope, VoteService){
+        $scope.likes = 0;
+        $scope.dislikes = 0;
+        $scope.item_id = -1;
+
+
+        /* getVotes */
+        $scope.getVote = function() {
+            console.log("Inside getVotes, and the item_id is: ", $scope.item_id)
+            VoteService.getMenuItemVote($scope.item_id).then(function(dataResponse){
+                $scope.likes = dataResponse.data.Item.likes;
+                $scope.dislikes = dataResponse.data.Item.dislikes;
+            });
+        };
+
+        $scope.postVote = function(vote) {
+            console.log("inside postvote")
+            VoteService.postMenuItemVote($scope.item_id, vote).then(function(dataResponse){
+                console.log("We posted!")
+                $scope.likes = dataResponse.data.Item.likes;
+                $scope.dislikes = dataResponse.data.Item.dislikes;      
+            })
+        };
+
+        $scope.initVote = function(item_id) {
+            if ($scope.item_id == -1) {
+                $scope.item_id = item_id
+                $scope.getVote()
+            };
+            return true;
+
+        };
+
+
+    });
+
     /* PanelController - 
         Controller for the panel for each restaurant selection, 
         user can select between the description of the restaurant (default),
@@ -20,7 +59,6 @@
         $scope.review = {};
         $scope.myInterval = 5000;
         $scope.slides = {};
-        
 
         /* selectTab - 
             sets the tab that the user clicked on 
@@ -271,6 +309,34 @@
                 method  : 'POST',
                 url     : restaurant_url,
                 data    : review_obj,
+                headers : {'Content-Type': 'application/json'},
+            });
+        };
+    });
+
+
+    app.service("VoteService", function($http){
+        console.log("VoteService on")
+        //this.review = {};
+
+        this.getMenuItemVote = function(item_id) {
+            menu_votes_url = '/restaurants/vote/' + item_id + '/'+ 0;
+            console.log("The url is: ", menu_votes_url)
+             return $http({
+                 method  : 'GET',
+                 url     : menu_votes_url,
+                 headers : {'Content-Type': 'application/json'},
+            });
+        }
+
+
+        this.postMenuItemVote = function(item_id, vote) {
+            menu_votes_url = '/restaurants/vote/' + item_id + '/' + vote;
+            console.log("Sending HTTP req to ", menu_votes_url);
+            return $http({
+                method  : 'POST',
+                url     : menu_votes_url,
+                data    : vote,
                 headers : {'Content-Type': 'application/json'},
             });
         };

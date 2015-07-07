@@ -1,0 +1,39 @@
+      {% block restaurant_menu_content %}    
+          <article class="options row align_center"  ng-controller="VoteController" ng-show="initVote({{item.id}})">
+          <div class="row">
+            <div class="col-md-3 menu-item-container">
+              {% if item.image.image_path is defined %}
+              <img src="../../{{item.image.image_path}}" class="menu-item-images">
+              {% else %}
+              <p>No Image Exists</p>
+              {% endif %}  
+            </div>
+              <div class = "col-md-7">
+              			{{item.name}}
+              			<br>
+		                {{item.description}}
+		                <br>
+                    {{item.price}}
+                    <br>
+		                <p class='user_name_text'>Added by: {{item.user.name}}</p> 
+		                <!-- If the user is logged in, let him edit the item, and if the user created the item let them delete it -->
+		                {% if user_info is not none %}
+		                <a href="{{url_for('menu_item_edit', restaurant_id = restaurant.id, menu_id = item.id)}}">edit</a> 
+		                {% if user_info.email == restaurant.user.email %}<a href="{{url_for('menu_item_delete', restaurant_id = restaurant.id, menu_id = item.id)}}">delete</a>
+		                {% endif %}
+		                {% endif %}
+			  </div>
+            <!-- <form action="{{url_for('vote_for_item', item_id = item.id, vote = 1)}}">
+             -->
+
+	          <div class = "col-md-1">  
+              <button type='submit' class="btn btn-success"  ng-click="postVote(1)">[[likes]] <span class="glyphicon glyphicon-thumbs-up" aria-hidden="true"></span></button>
+            </div>
+	          <div class = "col-md-1">
+	            <button type='submit' class='btn btn-danger' ng-click="postVote(2)">[[dislikes]] <span class="glyphicon glyphicon-thumbs-down" aria-hidden="true"></span></button>
+		     	  </div>
+        	  
+          </div>
+          </article>
+
+      {% endblock %}

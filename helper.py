@@ -1,4 +1,9 @@
-# helper.py
+""" helper.py.
+
+    This file has the functions necessary to carry out processing
+    but not related to routing directly
+"""
+
 from session_setup import session
 from flask_setup import ALLOWED_EXTENSIONS, app
 from database_setup import User, Restaurant, MenuItem, \

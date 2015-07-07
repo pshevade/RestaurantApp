@@ -1,4 +1,5 @@
 """ Main file to run the restaurant menu app. """
+
 from flask_setup import app
 import database_setup
 import routing

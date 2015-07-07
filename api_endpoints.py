@@ -4,10 +4,34 @@ THis file has the routing functions for all the API endpoints
 
 """
 from flask import url_for, request, jsonify
-from flask_setup import app
+from flask_setup import app, csrf
 from werkzeug.contrib.atom import AtomFeed
 from session_setup import session
 from database_setup import Restaurant, MenuItem, Reviews, RestaurantImages
+
+
+@csrf.exempt
+@app.route('/restaurants/vote/<int:item_id>/<int:vote>', methods=['GET', 'POST'])
+def vote_for_item(item_id, vote):
+    """
+    Vote for an item - allow only authenticated users to vote on items.
+
+    TODO : implement such that one user can do one vote for one item.
+    arguments:  item_id (for that particular item), vote (1 for yes, 2 for no)
+    returns:    increment/decrement the item's rating - and redirect to restaurant_menu
+    """
+    # if handle_login(login_session) is False:
+    #     return redirect('/login')
+    item = session.query(MenuItem).filter_by(id=item_id).one()
+    if request.method == 'POST':
+        if vote == 1:
+            item.likes += 1
+        elif vote == 2:
+            item.dislikes += 1
+        session.add(item)
+        session.commit()
+    # return redirect(url_for('restaurant_menu', restaurant_id=item.restaurant_id))
+    return jsonify(Item=item.serialize)
 
 
 @app.route('/restaurants/<int:restaurant_id>/reviews/JSON')

@@ -1,5 +1,5 @@
 <!doctype html>
-<html>
+<html ng-app="restaurants">
 
 {% extends "navbar-restaurantdetails.html" %}
 {% block restaurant_details %}
@@ -26,7 +26,7 @@
           <!-- This is where all the appetizers go -->
           {% for item in menu_list %}
           {% if item.course == "Appetizer" %}
-          <article class="options row align_center">
+          <article class="options row align_center"  ng-controller="VoteController" ng-show="initVote({{item.id}})">
           <div class="row">
             <div class="col-md-3 menu-item-container">
               {% if item.image.image_path is defined %}
@@ -36,34 +36,30 @@
               {% endif %}  
             </div>
               <div class = "col-md-7">
-              			{{item.name}}
-              			<br>
-		                {{item.description}}
-		                <br>
+                    {{item.name}}
+                    <br>
+                    {{item.description}}
+                    <br>
                     {{item.price}}
                     <br>
-		                <p class='user_name_text'>Added by: {{item.user.name}}</p> 
-		                <!-- If the user is logged in, let him edit the item, and if the user created the item let them delete it -->
-		                {% if user_info is not none %}
-		                <a href="{{url_for('menu_item_edit', restaurant_id = restaurant.id, menu_id = item.id)}}">edit</a> 
-		                {% if user_info.email == restaurant.user.email %}<a href="{{url_for('menu_item_delete', restaurant_id = restaurant.id, menu_id = item.id)}}">delete</a>
-		                {% endif %}
-		                {% endif %}
-			  </div>
+                    <p class='user_name_text'>Added by: {{item.user.name}}</p> 
+                    <!-- If the user is logged in, let him edit the item, and if the user created the item let them delete it -->
+                    {% if user_info is not none %}
+                    <a href="{{url_for('menu_item_edit', restaurant_id = restaurant.id, menu_id = item.id)}}">edit</a> 
+                    {% if user_info.email == restaurant.user.email %}<a href="{{url_for('menu_item_delete', restaurant_id = restaurant.id, menu_id = item.id)}}">delete</a>
+                    {% endif %}
+                    {% endif %}
+              </div>
+            <!-- <form action="{{url_for('vote_for_item', item_id = item.id, vote = 1)}}">
+             -->
 
-	          <div class = "col-md-1">
-	        	<form action="{{url_for('vote_for_item', item_id = item.id, vote = 1)}}">
-                <input type="hidden" name="_csrf_token" value="{{ csrf_token() }}">
-	            	<button type='submit' class="btn btn-success">{{item.likes}} <span class="glyphicon glyphicon-thumbs-up" aria-hidden="true"></span></button>
-	        	</form>
-	          </div>
-	          <div class = "col-md-1">
-	        	<form action="{{url_for('vote_for_item', item_id = item.id, vote = 2)}}">
-                <input type="hidden" name="_csrf_token" value="{{ csrf_token() }}">
-		            <button type='submit' class='btn btn-danger'>{{item.dislikes}} <span class="glyphicon glyphicon-thumbs-down" aria-hidden="true"></span></button>
-		        </form>
-        	  </div>
-        	  
+            <div class = "col-md-1">  
+              <button type='submit' class="btn btn-success"  ng-click="postVote(1)">[[likes]] <span class="glyphicon glyphicon-thumbs-up" aria-hidden="true"></span></button>
+            </div>
+            <div class = "col-md-1">
+              <button type='submit' class='btn btn-danger' ng-click="postVote(2)">[[dislikes]] <span class="glyphicon glyphicon-thumbs-down" aria-hidden="true"></span></button>
+            </div>
+            
           </div>
           </article>
 
@@ -85,42 +81,40 @@
           <!-- The entree items are listed here -->
           {% for item in menu_list %}
           {% if item.course == "Entree" %}
-          <article class="options row align_center">
-            <div class="row">
+          <article class="options row align_center"  ng-controller="VoteController" ng-show="initVote({{item.id}})">
+          <div class="row">
             <div class="col-md-3 menu-item-container">
               {% if item.image.image_path is defined %}
               <img src="../../{{item.image.image_path}}" class="menu-item-images">
               {% else %}
               <p>No Image Exists</p>
               {% endif %}  
-            </div>   	  
+            </div>
               <div class = "col-md-7">
-		                {{item.name}}
-              			<br>
-		                {{item.description}}
-		                <br>
+                    {{item.name}}
+                    <br>
+                    {{item.description}}
+                    <br>
                     {{item.price}}
                     <br>
-		                <p class='user_name_text'>Added by: {{item.user.name}}</p> 
-		                <!-- If the user is logged in, let him edit the item, and if the user created the item let them delete it -->
-		                {% if user_info is not none %}
-		                <a href="{{url_for('menu_item_edit', restaurant_id = restaurant.id, menu_id = item.id)}}">edit</a> 
-		                {% if user_info.email == restaurant.user.email %}<a href="{{url_for('menu_item_delete', restaurant_id = restaurant.id, menu_id = item.id)}}">delete</a>
-		                {% endif %}
-		                {% endif %}
-			  </div>
+                    <p class='user_name_text'>Added by: {{item.user.name}}</p> 
+                    <!-- If the user is logged in, let him edit the item, and if the user created the item let them delete it -->
+                    {% if user_info is not none %}
+                    <a href="{{url_for('menu_item_edit', restaurant_id = restaurant.id, menu_id = item.id)}}">edit</a> 
+                    {% if user_info.email == restaurant.user.email %}<a href="{{url_for('menu_item_delete', restaurant_id = restaurant.id, menu_id = item.id)}}">delete</a>
+                    {% endif %}
+                    {% endif %}
+              </div>
+            <!-- <form action="{{url_for('vote_for_item', item_id = item.id, vote = 1)}}">
+             -->
 
-	          <div class = "col-md-1">
-	        	<form action="{{url_for('vote_for_item', item_id = item.id, vote = 1)}}">
-	            	<button type='submit' class="btn btn-success">{{item.likes}} <span class="glyphicon glyphicon-thumbs-up" aria-hidden="true"></span></button>
-	        	</form>
-	          </div>
-	          <div class = "col-md-1">
-	        	<form action="{{url_for('vote_for_item', item_id = item.id, vote = 2)}}">
-		            <button type='submit' class='btn btn-danger'>{{item.dislikes}} <span class="glyphicon glyphicon-thumbs-down" aria-hidden="true"></span></button>
-		        </form>
-        	  </div>
-
+            <div class = "col-md-1">  
+              <button type='submit' class="btn btn-success"  ng-click="postVote(1)">[[likes]] <span class="glyphicon glyphicon-thumbs-up" aria-hidden="true"></span></button>
+            </div>
+            <div class = "col-md-1">
+              <button type='submit' class='btn btn-danger' ng-click="postVote(2)">[[dislikes]] <span class="glyphicon glyphicon-thumbs-down" aria-hidden="true"></span></button>
+            </div>
+            
           </div>
           </article>
           {% endif %}
@@ -142,45 +136,41 @@
           <!-- the dessert items are listed here -->
           {% for item in menu_list %}
           {% if item.course == "Dessert" %}
-          <article class="options row align_center">
-          	<div class="row">
-        	  	
-              <div class="col-md-3 menu-item-container">
-                {% if item.image.image_path is defined %}
-                <img src="../../{{item.image.image_path}}" class="menu-item-images">
-                {% else %}
-                <p>No Image Exists</p>
-                {% endif %}  
-              </div>
+          <article class="options row align_center"  ng-controller="VoteController" ng-show="initVote({{item.id}})">
+          <div class="row">
+            <div class="col-md-3 menu-item-container">
+              {% if item.image.image_path is defined %}
+              <img src="../../{{item.image.image_path}}" class="menu-item-images">
+              {% else %}
+              <p>No Image Exists</p>
+              {% endif %}  
+            </div>
               <div class = "col-md-7">
-		                {{item.name}}
-              			<br>
-		                {{item.description}}
-		                <br>
+                    {{item.name}}
+                    <br>
+                    {{item.description}}
+                    <br>
                     {{item.price}}
                     <br>
-		                <p class='user_name_text'>Added by: {{item.user.name}}</p> 
-		                <!-- If the user is logged in, let him edit the item, and if the user created the item let them delete it -->
-		                {% if user_info is not none %}
-		                <a href="{{url_for('menu_item_edit', restaurant_id = restaurant.id, menu_id = item.id)}}">edit</a> 
-		                {% if user_info.email == restaurant.user.email %}<a href="{{url_for('menu_item_delete', restaurant_id = restaurant.id, menu_id = item.id)}}">delete</a>
-		                {% endif %}
-		                {% endif %}
-			  </div>
+                    <p class='user_name_text'>Added by: {{item.user.name}}</p> 
+                    <!-- If the user is logged in, let him edit the item, and if the user created the item let them delete it -->
+                    {% if user_info is not none %}
+                    <a href="{{url_for('menu_item_edit', restaurant_id = restaurant.id, menu_id = item.id)}}">edit</a> 
+                    {% if user_info.email == restaurant.user.email %}<a href="{{url_for('menu_item_delete', restaurant_id = restaurant.id, menu_id = item.id)}}">delete</a>
+                    {% endif %}
+                    {% endif %}
+              </div>
+            <!-- <form action="{{url_for('vote_for_item', item_id = item.id, vote = 1)}}">
+             -->
 
-	          <div class = "col-md-1">
-	        	<form action="{{url_for('vote_for_item', item_id = item.id, vote = 1)}}">
-	            	<button type='submit' class="btn btn-success">{{item.likes}} <span class="glyphicon glyphicon-thumbs-up" aria-hidden="true"></span></button>
-	        	</form>
-	          </div>
-	          <div class = "col-md-1">
-	        	<form action="{{url_for('vote_for_item', item_id = item.id, vote = 2)}}">
-		            <button type='submit' class='btn btn-danger'>{{item.dislikes}} <span class="glyphicon glyphicon-thumbs-down" aria-hidden="true"></span></button>
-		        </form>
-        	  </div>
-              	  	
+            <div class = "col-md-1">  
+              <button type='submit' class="btn btn-success"  ng-click="postVote(1)">[[likes]] <span class="glyphicon glyphicon-thumbs-up" aria-hidden="true"></span></button>
+            </div>
+            <div class = "col-md-1">
+              <button type='submit' class='btn btn-danger' ng-click="postVote(2)">[[dislikes]] <span class="glyphicon glyphicon-thumbs-down" aria-hidden="true"></span></button>
+            </div>
+            
           </div>
-
           </article>
           {% endif %}
           {% endfor %}
@@ -201,45 +191,41 @@
           <!-- the beverage items are listed here -->
           {% for item in menu_list %}
           {% if item.course == "Beverage" %}
-          <article class="options row align_center">
+          <article class="options row align_center"  ng-controller="VoteController" ng-show="initVote({{item.id}})">
           <div class="row">
-        	  <div class="col-md-3 menu-item-container">
+            <div class="col-md-3 menu-item-container">
               {% if item.image.image_path is defined %}
-        	  	<img src="../../{{item.image.image_path}}" class="menu-item-images">
+              <img src="../../{{item.image.image_path}}" class="menu-item-images">
               {% else %}
               <p>No Image Exists</p>
               {% endif %}  
-        	  </div>
+            </div>
               <div class = "col-md-7">
-		                {{item.name}}
-              			<br>
-		                {{item.description}}
-		                <br>
+                    {{item.name}}
+                    <br>
+                    {{item.description}}
+                    <br>
                     {{item.price}}
                     <br>
-		                <p class='user_name_text'>Added by: {{item.user.name}}</p> 
-		                <!-- If the user is logged in, let him edit the item, and if the user created the item let them delete it -->
-		                {% if user_info is not none %}
-		                <a href="{{url_for('menu_item_edit', restaurant_id = restaurant.id, menu_id = item.id)}}">edit</a> 
-		                {% if user_info.email == restaurant.user.email %}<a href="{{url_for('menu_item_delete', restaurant_id = restaurant.id, menu_id = item.id)}}">delete</a>
-		                {% endif %}
-		                {% endif %}
-			        </div>
+                    <p class='user_name_text'>Added by: {{item.user.name}}</p> 
+                    <!-- If the user is logged in, let him edit the item, and if the user created the item let them delete it -->
+                    {% if user_info is not none %}
+                    <a href="{{url_for('menu_item_edit', restaurant_id = restaurant.id, menu_id = item.id)}}">edit</a> 
+                    {% if user_info.email == restaurant.user.email %}<a href="{{url_for('menu_item_delete', restaurant_id = restaurant.id, menu_id = item.id)}}">delete</a>
+                    {% endif %}
+                    {% endif %}
+              </div>
+            <!-- <form action="{{url_for('vote_for_item', item_id = item.id, vote = 1)}}">
+             -->
 
-	          <div class = "col-md-1">
-	        	<form action="{{url_for('vote_for_item', item_id = item.id, vote = 1)}}">
-	            	<button type='submit' class="btn btn-success">{{item.likes}} <span class="glyphicon glyphicon-thumbs-up" aria-hidden="true"></span></button>
-	        	</form>
-	          </div>
-	          <div class = "col-md-1">
-	        	<form action="{{url_for('vote_for_item', item_id = item.id, vote = 2)}}">
-		            <button type='submit' class='btn btn-danger'>{{item.dislikes}} <span class="glyphicon glyphicon-thumbs-down" aria-hidden="true"></span></button>
-		        </form>
-        	  </div>
+            <div class = "col-md-1">  
+              <button type='submit' class="btn btn-success"  ng-click="postVote(1)">[[likes]] <span class="glyphicon glyphicon-thumbs-up" aria-hidden="true"></span></button>
+            </div>
+            <div class = "col-md-1">
+              <button type='submit' class='btn btn-danger' ng-click="postVote(2)">[[dislikes]] <span class="glyphicon glyphicon-thumbs-down" aria-hidden="true"></span></button>
+            </div>
+            
           </div>
-
-
-
           </article>
           {% endif %}
           {% endfor %}
@@ -250,5 +236,7 @@
 		</form>
     </main>
   </div>
+
+  <script src="../../static/js/restaurant_app.js"></script>
 
 {% endblock %}

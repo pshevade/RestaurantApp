@@ -4,7 +4,8 @@
 {% block restaurant_details %}
 
         <h3>{{restaurant.name}} - Delete</h3>
-            </div>
+        </div>
+        <div class = "col-md-12 col-xs-12 align_center details form-group">
             <p>Are you sure you want to delete this restaurant?</p>
             <form action="{{url_for('restaurants_delete', restaurant_id = restaurant.id)}}" method='POST'>
                 <p>
@@ -13,5 +14,5 @@
                     <a href="{{url_for('restaurants_page')}}" class="btn btn-link">Cancel</a>
                 </p>
             </form>
-
+        </div>    
 {% endblock %}

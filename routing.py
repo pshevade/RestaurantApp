@@ -1,5 +1,8 @@
-# routing.py
-# All the routing functions
+""" routing.py.
+
+    This file has the routing functions.
+"""
+
 import random
 import string
 from datetime import datetime
@@ -381,29 +384,6 @@ def add_new_review(restaurant_id):
         session.commit()
 
     return redirect(url_for('restaurants_page'))
-
-
-@app.route('/restaurant/<int:item_id>/<int:vote>')
-def vote_for_item(item_id, vote):
-    """
-    Vote for an item - allow only authenticated users to vote on items.
-
-    TODO : implement such that one user can do one vote for one item.
-    arguments:  item_id (for that particular item), vote (1 for yes, 2 for no)
-    returns:    increment/decrement the item's rating - and redirect to restaurant_menu
-    """
-    if helper.handle_login(login_session) is False:
-        return redirect('/login')
-
-    item = session.query(MenuItem).filter_by(id=item_id).one()
-
-    if vote == 1:
-        item.likes += 1
-    elif vote == 2:
-        item.dislikes += 1
-    session.add(item)
-    session.commit()
-    return redirect(url_for('restaurant_menu', restaurant_id=item.restaurant_id))
 
 
 @app.route('/restaurants/<int:restaurant_id>/image', methods=['GET', 'POST'])
