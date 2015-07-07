@@ -43,8 +43,10 @@ def restaurants_page():
     for restaurant in restaurant_list:
         print("Restaurant name: {0}".format(restaurant.name))
         tag_pairs = session.query(RestaurantTags).filter_by(restaurant_id=restaurant.id).all()
+        tag_list[restaurant.id] = []
         for pair in tag_pairs:
-            tag_list[restaurant.id] = session.query(Tags).filter_by(pair.tag_id).first()
+            tag_list[restaurant.id].append(session.query(Tags).filter_by(id=pair.tag_id).first())
+            print(tag_list)
     # Find the top menu item for each restaurant - based on customer voting
     top_menu_item_list = helper.get_top_menu_items(restaurant_list)
     print("The top menu item list is: {}".format(top_menu_item_list))
@@ -84,7 +86,11 @@ def restaurants_edit(restaurant_id):
         if len(request.form['web']) > 0:
             restaurant.web = helper.check_restaurant_URL(request.form['web'])
         if len(request.form['tag_line']) > 0:
-            restaurant.tag_line = request.form['tag_line']
+            tag_line = request.form['tag_line']
+            tag_list = tag_line.split(',')
+            helper.delete_restaurant_tag_pairs(restaurant.id)   
+            for tag in tag_list:
+                helper.add_tag_if_not_exists(tag, restaurant.id)
         if len(request.form['description']) > 0:
             restaurant.description = request.form['description']
 
@@ -97,8 +103,17 @@ def restaurants_edit(restaurant_id):
     else:
         # Get user info if the user is signed in to render edit form
         user_info = helper.get_user_if_exists(login_session)
+        tag_rest_list = session.query(RestaurantTags).filter_by(restaurant_id=restaurant.id).all()
+        tag_line = ''
+        for pair in tag_rest_list:
+            tag = session.query(Tags).filter_by(id=pair.tag_id).first()
+            print("the growing tag line is:")
+            print("the tag is {}".format(tag.tag_name))
+            tag_line += tag.tag_name + ', '
+            print(tag_line)
         return render_template('editrestaurant.html',
                                restaurant=restaurant,
+                               tag_line=tag_line,
                                user_info=user_info)
 
 
@@ -116,10 +131,11 @@ def restaurants_delete(restaurant_id):
     # If the user isn't logged in, send to the login page
     if helper.handle_login(login_session) is False:
         return redirect('/login')
-
+    print("inside restaurant delete")
     restaurant = session.query(Restaurant).filter_by(id=restaurant_id).one()
     # Delete all menu items, reviews, and images for the restaurant
     if request.method == 'POST':
+        print("Post, so going to delete restaurant")
         helper.delete_restaurant(restaurant.id)
         return redirect(url_for('restaurants_page'))
     else:
@@ -157,10 +173,7 @@ def restaurants_new():
         tag_line = request.form['tag_line']
         tag_list = tag_line.split(',')
         for tag in tag_list:
-            tag_obj = Tags(tag_name=tag)
-            tag_rest_pair = RestaurantTags(tag_id=tag_obj.id, restaurant_id=new_restaurant.id)
-            session.add(tag_obj)
-            session.commit()
+            helper.add_tag_if_not_exists(tag, new_restaurant.id)
 
         return redirect(url_for('restaurants_page'))
     else:
@@ -216,7 +229,10 @@ def menu_item_edit(restaurant_id, menu_id):
         # if len(request.form['name']) > 0:
         # 	menu_item.name = request.form['name']
         if len(request.form['price']) > 0:
-            menu_item.price = request.form['price']
+            if '$' in request.form['price']:
+                menu_item.price = request.form['price']
+            else:
+                menu_item.price = '$' + request.form['price']
         else:
             print("Item price is not changed")
         if len(request.form['description']) > 0:
@@ -271,7 +287,7 @@ def menu_item_delete(restaurant_id, menu_id):
 
 
 @csrf.include
-@app.route('/restaurants/<int:restaurant_id>/new', methods=['GET', 'POST'])
+@app.route('/restaurants/<int:restaurant_id>/new/', methods=['GET', 'POST'])
 def menu_item_new(restaurant_id):
     """
     Create a new menu item - only allow authenticated users to do so.

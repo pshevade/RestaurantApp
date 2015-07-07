@@ -56,3 +56,9 @@ docs/_build/
 
 # PyBuilder
 target/
+
+# DS_Store
+*.DS_Store
+
+# client_secrets.json
+client_secrets.json

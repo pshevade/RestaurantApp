@@ -5,6 +5,7 @@ import routing
 import helper
 import session_setup
 import authentication
+import api_endpoints
 
 
 if __name__ == '__main__':

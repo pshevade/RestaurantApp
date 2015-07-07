@@ -40,7 +40,7 @@
               			<br>
 		                {{item.description}}
 		                <br>
-                    ${{item.price}}
+                    {{item.price}}
                     <br>
 		                <p class='user_name_text'>Added by: {{item.user.name}}</p> 
 		                <!-- If the user is logged in, let him edit the item, and if the user created the item let them delete it -->
@@ -99,7 +99,7 @@
               			<br>
 		                {{item.description}}
 		                <br>
-                    ${{item.price}}
+                    {{item.price}}
                     <br>
 		                <p class='user_name_text'>Added by: {{item.user.name}}</p> 
 		                <!-- If the user is logged in, let him edit the item, and if the user created the item let them delete it -->
@@ -157,7 +157,7 @@
               			<br>
 		                {{item.description}}
 		                <br>
-                    ${{item.price}}
+                    {{item.price}}
                     <br>
 		                <p class='user_name_text'>Added by: {{item.user.name}}</p> 
 		                <!-- If the user is logged in, let him edit the item, and if the user created the item let them delete it -->
@@ -215,7 +215,7 @@
               			<br>
 		                {{item.description}}
 		                <br>
-                    ${{item.price}}
+                    {{item.price}}
                     <br>
 		                <p class='user_name_text'>Added by: {{item.user.name}}</p> 
 		                <!-- If the user is logged in, let him edit the item, and if the user created the item let them delete it -->
@@ -245,7 +245,7 @@
           {% endfor %}
 		</section>
 
-		<form action="{{url_for('menu_item_new', restaurant_id = restaurant.id)}}" >
+		<form action="{{url_for('menu_item_new', restaurant_id = restaurant.id)}}">
 	  		<button type='submit' class="btn btn-default btn-lg active" value="New Menu Item">Create New Item</button>
 		</form>
     </main>

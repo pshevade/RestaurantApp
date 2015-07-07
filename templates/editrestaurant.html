@@ -9,16 +9,16 @@
         </div>
         <div class = "col-md-12 col-xs-12 align_center details form-group">
             <p>Fill out the details of our new restaurant:</p>
-            <form action="{{url_for('restaurantsEdit', restaurant_id = restaurant.id)}}" method='post'>
+            <form action="{{url_for('restaurants_edit', restaurant_id = restaurant.id)}}" method='post'>
             <input type="hidden" name="_csrf_token" value="{{ csrf_token() }}">
-                <p>Restaurant Name<input class='form-control' type='text' size='30' name='name' placeholder='{{restaurant.name}}' disabled></p>
-                <p>Address<input class='form-control' type='text' size='30' name='address' placeholder='{{restaurant.address}}'></p>
-                <p>Phone Number<input class='form-control' type='text' size='30' name='phone' placeholder='{{restaurant.phone}}'></p>
-                <p>Website Address<input class='form-control' type='text' size='30' name='web' placeholder='{{restaurant.web}}'></p>
-                <p>Tag Line<input class='form-control' type='text' size='30' name='tag_line' placeholder='{{restaurant.tag_line}}'></p>
-                <p>Description<textarea class='form-control' size='30' rows='5' name='description' placeholder='{{restaurant.description}}'></textarea></p>
+                <p>Restaurant Name<input class='form-control' type='text' size='30' name='name' value='{{restaurant.name}}' disabled></p>
+                <p>Address<input class='form-control' type='text' size='30' name='address' value='{{restaurant.address}}'></p>
+                <p>Phone Number<input class='form-control' type='text' size='30' name='phone' value='{{restaurant.phone}}'></p>
+                <p>Website Address<input class='form-control' type='text' size='30' name='web' value='{{restaurant.web}}'></p>
+                <p>Tag Line<input class='form-control' type='text' size='30' name='tag_line' value='{{tag_line}}'></p>
+                <p>Description<textarea class='form-control' size='30' rows='5' name='description' value='{{restaurant.description}}'></textarea></p>
                 <p><input type='submit' value='Edit' class="btn btn-primary pull-left"><p>
-                <p><a href="{{url_for('restaurantsPage')}}" class="btn btn-link">Cancel</a>
+                <p><a href="{{url_for('restaurants_page')}}" class="btn btn-link">Cancel</a>
                 </p></p>
                 </p></form>
         </div></div>

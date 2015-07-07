@@ -1,8 +1,13 @@
 # helper.py
 from session_setup import session
+from flask_setup import ALLOWED_EXTENSIONS, app
 from database_setup import User, Restaurant, MenuItem, \
-    Image, Tags, RestaurantTags, Reviews
+    Image, Tags, RestaurantTags, Reviews, RestaurantImages
 from urlparse import urlparse
+from werkzeug import secure_filename
+from authentication import login_session
+import os
+import string
 
 
 def get_top_menu_items(restaurant_list):
@@ -159,28 +164,45 @@ def delete_restaurant(restaurant_id):
     Cascade through and remove all related entries first, including the
     images, menu_items, revies, tags.
     """
-    try:
-        restaurant = session.qery(Restaurant).filter_by(id=restaurant_id).first()
-        menu_items = session.query(MenuItem).filter_by(restaurant_id=restaurant_id).all()
-        for item in menu_items:
-            if delete_menu_item(item.id):
-                print("Deleted menu item '{0}' successfully: restaurant '{1}'".format(item.id, restaurant_id))
-        images_list = session.query(Image).filter_by(restaurant_id=restaurant_id).all()
-        for image in images_list:
-            if delete_image(image.id):
-                print("Deleted image '{0}' successfully: restaurant '{1}'".format(image.id, restaurant_id))
-        reviews_list = session.query(Reviews).filter_by(restaurant_id=restaurant.id).all()
-        for review in reviews_list:
-            if delete_review(review.id):
-                print("Deleted review '{0}' successfully: restaurant '{1}'".format(review.id, restuarant_id))
-        tag_list = session.query(RestaurantTags).filter_by(restaurant_id=restaurant_id).all()
-        for tag in tag_list:
-            delete_tag(tag.tag_id)
-        session.delete(restaurant)
+    print("In delete restaurant")
+    # try:
+    restaurant = session.query(Restaurant).filter_by(id=restaurant_id).first()
+    print("The restaurant deleted is: {}".format(restaurant.name))
+    menu_items = session.query(MenuItem).filter_by(restaurant_id=restaurant_id).all()
+    print("deleting menu")
+    for item in menu_items:
+        if delete_menu_item(item.id):
+            print("Deleted menu item '{0}' successfully: restaurant '{1}'".format(item.id, restaurant_id))
+        else:
+            print("cannot delete menu item")
+    images_list = session.query(RestaurantImages).filter_by(restaurant_id=restaurant_id).all()
+    print("deleting images")
+    for image in images_list:
+        if delete_image(image.id):
+            print("Deleted image '{0}' successfully: restaurant '{1}'".format(image.id, restaurant_id))
+        else:
+            print("cannot delete images")
+        session.delete(image)
         session.commit()
-        return 1
-    except:
-        return 0
+    reviews_list = session.query(Reviews).filter_by(restaurant_id=restaurant.id).all()
+    print("deleing reviews")
+    for review in reviews_list:
+        if delete_review(review.id):
+            print("Deleted review '{0}' successfully: restaurant '{1}'".format(review.id, restaurant_id))
+        else:
+            print("cannot delete reviews")
+    tag_list = session.query(RestaurantTags).filter_by(restaurant_id=restaurant_id).all()
+    print("deleting tag pairs")
+    for tag_pair in tag_list:
+        delete_tag(tag_pair.tag_id)
+        session.delete(tag_pair)
+        session.commit()
+    print("got to the place where we will actually delete restaurant")
+    session.delete(restaurant)
+    session.commit()
+    return 1
+    # except:
+    #     return 0
 
 
 def delete_tag(tag_id):
@@ -216,6 +238,7 @@ def delete_menu_item(menu_id):
         # Delete menu item
         session.delete(menu_item)
         session.commit()
+        print("successfully leaving delete_menu_item")
         return 1
     except:
         return 0
@@ -231,3 +254,38 @@ def delete_image(image_id):
         return 1
     except:
         return 0
+
+
+def delete_restaurant_tag_pairs(rid):
+    """ Find restaurant_tag_pairs for a restaurant and delete """
+    pairs = session.query(RestaurantTags).filter_by(restaurant_id=rid).all()
+    for pair in pairs:
+        session.delete(pair)
+        session.commit()
+
+
+def add_tag_if_not_exists(tag, rid):
+    """
+    Check if tag and restaurant pair exists, or else create.
+
+    arguments:  tag - string, rid - restaurant id
+    """
+
+    tag = string.strip(tag)    # remove the leading white spaces
+    if len(tag) > 0:
+        tag_obj = session.query(Tags).filter_by(tag_name=tag).first()
+        if tag_obj is None:
+            tag_obj = Tags(tag_name=tag)
+            session.add(tag_obj)
+            session.commit()
+            restaurant_tag_pair = RestaurantTags(tag_id=tag_obj.id, restaurant_id=rid)
+        else:
+            # IF tag exists, see if the tag and restaurant pair exists.
+            restaurant_tag_pair = session.query(RestaurantTags).filter_by(restaurant_id=rid, tag_id=tag_obj.id).first()
+            if restaurant_tag_pair is None:
+                # If the pair doesnt exist, create the pair
+                restaurant_tag_pair = RestaurantTags(tag_id=tag_obj.id, restaurant_id=rid)
+        session.add(restaurant_tag_pair)
+        session.commit()
+    else:
+        print("No tag!")
