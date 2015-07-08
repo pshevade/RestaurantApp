@@ -8,15 +8,38 @@ What it uses/Requirements:
 3. Python (2.7.6+) (https://www.python.org/download/releases/2.7.6/)
 4. SQLAlchemy (0.8.4) (http://www.sqlalchemy.org/) using a SQLite database
 5. OAuth2 client (1.4.11) - https://github.com/google/oauth2client   
-5. Set up credentials with Google as per https://developers.google.com/identity/protocols/OAuth2
-6. Save the client_secrets.json file (With the client ID and client secret) in the same folder as final_projects.py
-7. Flask-SeaSurf (0.2.0) for the CSRF protection
+6. Flask-SeaSurf (0.2.0) for the CSRF protection
 
 TO RUN: 
 1. Make sure the requirements are up to date. 
-2. Go to the folder where all the project files (specifically, final_projects.py file) are stored
-3. Enter command "python final_projects.py"
-4. Open browser and navigate to "localhost:5000/restaurants"
+2. Set up credentials with Google as per https://developers.google.com/identity/protocols/OAuth2
+3. Save the client_secrets.json file (With the client ID and client secret) in the same folder as final_projects.py
+4. Update the "data-clientid" field in the login.html file to your client id that you have in the client_secrets.json file. (Under the "GOOGLE PLUS SIGN IN" comment) 
+5. Go to the folder where all the project files (specifically, final_projects.py file) are stored
+
+6. Enter command "python final_projects.py"
+7. Open browser and navigate to "localhost:5000/restaurants"
+
+
+WHAT CAN YOU DO:
+
+As a user, you can do the following WITHOUT logging in:
+1. View restaurant info, including the reviews, map, and images, that others have uploaded
+2. View menu item info, including the details and images, that others have uploaded
+
+As a user, you can do the following AFTER logging in:
+1. Create restaurant
+2. Add/edit details to a new/existing restaurant
+3. Add reviews to a existing restaurant (including newly created ones)
+4. Add images to a existing restaurants (including newly created ones)
+   Note: In the main page ('/'' or '/restaurants') you can see images that users have uploaded as "Restaurant images"
+   as well as images that have been uploaded to individual menu items (carousel used in the main page).
+   Restaurant images (those uploaded to the "Restaurant" cannot be edited, but those uploaded to individual menu items can be edited - editing or deleting "Restaurant images" is a TODO).
+7. Add/remove tags for existing restaurant
+6. Delete existing restaurant that YOU (and not someone else) have created
+
+6. Create menu items for existing restaurants
+7. Edit menu items, including changing the image associated with the menu item.
 
 How it works:
 1. Shows a list of restaurants @ '/' or '/restaurants'
