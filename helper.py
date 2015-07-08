@@ -119,13 +119,9 @@ def check_restaurant_URL(link):
     arguemnts:  link - the url
     returns:    updated link
     """
-    print("The Restaurant link before any parsing, raw is: {}".format(link))
     link_url_obj = urlparse(link)
     if link_url_obj.scheme is '':
         link = 'http://' + link
-        print("check_restaurant_URL - updated the link - the link scheme is: {}".format(link))
-    else:
-        print("check_restaurant_URL - the link scheme is: {}".format(link_url_obj.scheme))
     return link
 
 
@@ -142,10 +138,8 @@ def create_new_image_if_not_exists(file, title):
     returns:    image id, either a new id or existing image id (-1 if error)
     """
     if file and allowed_file(file.filename):
-        print("upload_file - filename is ok")
         filename = secure_filename(file.filename)
         file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
-        print("The uploaded file path is: {}", file_path)
         file.save(file_path)
         image_exists = session.query(Image).filter_by(image_path=file_path).first()
         if image_exists is None:
@@ -158,7 +152,6 @@ def create_new_image_if_not_exists(file, title):
         else:
             img_id = image_exists.id
     else:
-        # If image error,
         img_id = -1
     return img_id
 
@@ -171,46 +164,31 @@ def delete_restaurant(restaurant_id):
     images, menu_items, revies, tags.
     """
     print("In delete restaurant")
-    # try:
-    restaurant = session.query(Restaurant).filter_by(id=restaurant_id).first()
-    name = restaurant.name
-    print("The restaurant deleted is: {}".format(restaurant.name))
-    menu_items = session.query(MenuItem).filter_by(restaurant_id=restaurant_id).all()
-    print("deleting menu")
-    for item in menu_items:
-        if delete_menu_item(item.id):
-            print("Deleted menu item '{0}' successfully: restaurant '{1}'".format(item.id, restaurant_id))
-        else:
-            print("cannot delete menu item")
-    images_list = session.query(RestaurantImages).filter_by(restaurant_id=restaurant_id).all()
-    print("deleting images")
-    for image in images_list:
-        if delete_image(image.id):
-            print("Deleted image '{0}' successfully: restaurant '{1}'".format(image.id, restaurant_id))
-        else:
-            print("cannot delete images")
-        session.delete(image)
+    try:
+        restaurant = session.query(Restaurant).filter_by(id=restaurant_id).first()
+        name = restaurant.name
+        menu_items = session.query(MenuItem).filter_by(restaurant_id=restaurant_id).all()
+        for item in menu_items:
+            delete_menu_item(item.id)
+        images_list = session.query(RestaurantImages).filter_by(restaurant_id=restaurant_id).all()
+        for image in images_list:
+            delete_image(image.id)
+            session.delete(image)
+            session.commit()
+        reviews_list = session.query(Reviews).filter_by(restaurant_id=restaurant.id).all()
+        for review in reviews_list:
+            delete_review(review.id)
+        tag_list = session.query(RestaurantTags).filter_by(restaurant_id=restaurant_id).all()
+        for tag_pair in tag_list:
+            delete_tag(tag_pair.tag_id)
+            session.delete(tag_pair)
+            session.commit()
+        session.delete(restaurant)
         session.commit()
-    reviews_list = session.query(Reviews).filter_by(restaurant_id=restaurant.id).all()
-    print("deleing reviews")
-    for review in reviews_list:
-        if delete_review(review.id):
-            print("Deleted review '{0}' successfully: restaurant '{1}'".format(review.id, restaurant_id))
-        else:
-            print("cannot delete reviews")
-    tag_list = session.query(RestaurantTags).filter_by(restaurant_id=restaurant_id).all()
-    print("deleting tag pairs")
-    for tag_pair in tag_list:
-        delete_tag(tag_pair.tag_id)
-        session.delete(tag_pair)
-        session.commit()
-    print("got to the place where we will actually delete restaurant")
-    session.delete(restaurant)
-    session.commit()
-    flash("Restaurant {} deleted!".format(name))
-    return 1
-    # except:
-    #     return 0
+        flash("Restaurant {} deleted!".format(name))
+        return 1
+    except:
+        return 0
 
 
 def delete_tag(tag_id):
@@ -243,8 +221,7 @@ def delete_menu_item(menu_id):
         name = menu_item.name
         item_votes = session.query(UserVotes).filter_by(menu_id=menu_item.id).all()
         # Delete associated images
-        if delete_image(menu_item.image_id):
-            print("Deleted menu item images: menu item '{}'".format(menu_item.id))
+        delete_image(menu_item.image_id)
         # Delete menu item
         for vote in item_votes:
             session.delete(vote)
@@ -252,7 +229,6 @@ def delete_menu_item(menu_id):
         session.delete(menu_item)
         session.commit()
         flash("Menu item {} deleted".format(name))
-        print("successfully leaving delete_menu_item")
         return 1
     except:
         return 0
@@ -301,5 +277,3 @@ def add_tag_if_not_exists(tag, rid):
                 restaurant_tag_pair = RestaurantTags(tag_id=tag_obj.id, restaurant_id=rid)
         session.add(restaurant_tag_pair)
         session.commit()
-    else:
-        print("No tag!")

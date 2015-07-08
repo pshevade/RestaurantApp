@@ -15,7 +15,7 @@ from helper import create_user, get_user_id, get_user_info
 import requests
 
 
-CLIENT_ID = json.loads(open('../client_secrets.json', 'r').read())['web']['client_id']
+CLIENT_ID = json.loads(open('client_secrets.json', 'r').read())['web']['client_id']
 
 
 @csrf.exempt
@@ -28,28 +28,19 @@ def gconnect():
     """
     # Validate state token
     if request.args.get('state') != login_session['state']:
-        print("inside validating state token")
         response = make_response(json.dumps('Invalid state parameter.'), 401)
         response.headers['Content-Type'] = 'application/json'
-        print("validated state token")
         return response
-    else:
-        print("request args get state %s" % request.args.get('state'))
-        print(" was the same as login session's state %s" % login_session['state'])
     # Obtain authorization code
     code = request.data
-    print(code)
     try:
         # Upgrade the authorization code into a credentials object
         oauth_flow = flow_from_clientsecrets('../client_secrets.json', scope='')
         oauth_flow.redirect_uri = 'postmessage'
         credentials = oauth_flow.step2_exchange(code)
-        print("upgraded authorization code")
     except FlowExchangeError:
-        print("Failed to upgrade to authorization code")
         response = make_response(json.dumps('Failed to upgrade the authorization code.'), 401)
         response.headers['Content-Type'] = 'application/json'
-        print response
         return response
 
     # Check that the access token is valid.
@@ -60,14 +51,12 @@ def gconnect():
     result = json.loads(h.request(url, 'GET')[1])
     # If there was an error in the access token info, abort.
     if result.get('error') is not None:
-        print("There was an error in accessing token info")
         response = make_response(json.dumps(result.get('error')), 500)
         response.headers['Content-Type'] = 'application/json'
 
     # Verify that the access token is used for the intended user.
     gplus_id = credentials.id_token['sub']
     if result['user_id'] != gplus_id:
-        print("There was an error in verifying token was for intended user")
         response = make_response(
             json.dumps("Token's user ID doesn't match given user ID."), 401)
         response.headers['Content-Type'] = 'application/json'
@@ -75,13 +64,10 @@ def gconnect():
 
     # Verify that the access token is valid for this app.
     if result['issued_to'] != CLIENT_ID:
-        print("There was an error in verifying the token is valid for this app")
         response = make_response(
             json.dumps("Token's client ID does not match app's."), 401)
-        print "Token's client ID does not match app's."
         response.headers['Content-Type'] = 'application/json'
         return response
-    print("got to this point")
     stored_credentials = login_session.get('credentials')
     stored_gplus_id = login_session.get('gplus_id')
     if stored_credentials is not None and gplus_id == stored_gplus_id:
@@ -106,9 +92,7 @@ def gconnect():
     login_session['email'] = data['email']
     user_id = get_user_id(login_session['email'])
     if user_id is None:
-        print("Creating a new user id")
         user_id = create_user(login_session)
-    print("THe user id is: {}".format(user_id))
     user = get_user_info(user_id)
 
     login_session['user_id'] = user_id
@@ -122,7 +106,6 @@ def gconnect():
     output += ' " style = "width: 250px; height: 250px;border-radius: 125px;" ' \
               ' "-webkit-border-radius: 125x;-moz-border-radius: 125px;"> '
     flash("You are now logged in as %s" % login_session['username'])
-    print "done!"
     revoke_access()
     return output
 

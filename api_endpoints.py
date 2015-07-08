@@ -18,7 +18,6 @@ def vote_for_item(item_id, vote):
     """
     Vote for an item - allow only authenticated users to vote on items.
 
-    TODO : implement such that one user can do one vote for one item.
     arguments:  item_id (for that particular item), vote (1 for yes, 2 for no)
     returns:    increment/decrement the item's rating - and redirect to restaurant_menu
     """
@@ -27,34 +26,28 @@ def vote_for_item(item_id, vote):
 
     user = session.query(User).filter_by(email=login_session['email']).first()
     item = session.query(MenuItem).filter_by(id=item_id).one()
-    print("item id is: {}".format(item.id))
     # check if user has voted on the item
     update_vote = False
     user_vote = session.query(UserVotes).filter_by(user_id=user.id, menu_id=item.id).first()
     if request.method == 'POST':
-        print("The vote is: {}".format(vote))
         if user_vote is not None:
-            print("The user's previous vote was: {}".format(user_vote.vote))
             if user_vote.vote != vote:
-                print("Users vote is now different!")
+                # we have to reset the vote first
                 if vote == 1:
-                    print("Since user now voted for 'like'")
                     # We will add one to likes below when we update vote
                     item.dislikes -= 1
                 elif vote == 2:
-                    print("Since user now voted for 'dislike'")
                     item.likes -= 1
                     # we will add to dislikes below when we update vote
+                # Update the user's vote to the new vote
                 user_vote.vote = vote
                 update_vote = True
             elif user_vote.vote == vote:
                 update_vote = False
+        # If there is no user - vote record for this menu item, create one
         elif user_vote is None:
-            user_vote = UserVotes(user_id=user.id,
-                                  menu_id=item.id,
-                                  vote=vote)
+            user_vote = UserVotes(user_id=user.id, menu_id=item.id, vote=vote)
             update_vote = True
-
         # Update the vote
         if update_vote:
             if vote == 1:
@@ -86,8 +79,15 @@ def restaurant_list_json():
 
 
 @app.route('/restaurants/<int:restaurant_id>/JSON')
+def restaurant_json(restaurant_id):
+    """ Returns:    json object of details for that restaurant restaurants. """
+    restaurant = session.query(Restaurant).filter_by(id=restaurant_id).first()
+    return jsonify(Restaurant=restaurant.serialize)
+
+
+@app.route('/restaurants/<int:restaurant_id>/menu/JSON')
 def restaurant_menu_json(restaurant_id):
-    """ Returns:    json object for all the items for that restaurant. """
+    """ Returns:    json object for all the menu items for that restaurant. """
     items = session.query(MenuItem).filter_by(restaurant_id=restaurant_id)
     return jsonify(MenuItems=[i.serialize for i in items])
 
@@ -101,9 +101,8 @@ def restaurant_menu_item_json(restaurant_id, menu_id):
 
 @app.route('/restaurants/images/<int:restaurant_id>/JSON')
 def restaurant_images_json(restaurant_id):
-    """ Returns:    json object for with the details of the images. """
+    """ Returns:    json object for with the details of the restaurant/meny images. """
     images_list = []
-    print("in review jsons for restaurant: {0}".format(restaurant_id))
     restaurant_img_list = session.query(RestaurantImages).filter_by(restaurant_id=restaurant_id).all()
     for rest_img in restaurant_img_list:
         images_list.append(rest_img.image)
@@ -126,7 +125,12 @@ def restaurant_list_rss():
                     subtitle="List of all restaurants")
     restaurant_list = session.query(Restaurant)
     for restaurant in restaurant_list:
-        feed.add(restaurant.name, restaurant.description, content_type='html',
-                 author=restaurant.user.name, url=url_for('restaurantMenu', restaurant_id=restaurant.id), id=restaurant.id,
-                 updated=restaurant.last_update, published=restaurant.last_update)
+        feed.add(restaurant.name,
+                 restaurant.description,
+                 content_type='html',
+                 author=restaurant.user.name,
+                 url=url_for('restaurant_menu', restaurant_id=restaurant.id),
+                 id=restaurant.id,
+                 updated=restaurant.last_update,
+                 published=restaurant.last_update)
     return feed.get_response()

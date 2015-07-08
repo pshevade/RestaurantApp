@@ -44,23 +44,14 @@ def restaurants_page():
     restaurant_list = session.query(Restaurant).order_by("last_update desc").all()
     # Get all tags associated with the restaurant
     for restaurant in restaurant_list:
-        print("Restaurant name: {0}".format(restaurant.name))
         tag_pairs = session.query(RestaurantTags).filter_by(restaurant_id=restaurant.id).all()
         tag_list[restaurant.id] = []
         for pair in tag_pairs:
             tag_list[restaurant.id].append(session.query(Tags).filter_by(id=pair.tag_id).first())
-            print(tag_list)
     # Find the top menu item for each restaurant - based on customer voting
     top_menu_item_list = helper.get_top_menu_items(restaurant_list)
-    print("The top menu item list is: {}".format(top_menu_item_list))
     # Get the user data, if user has logged in
     user_info = helper.get_user_if_exists(login_session)
-    if user_info is not None:
-        print("User name: {}".format(user_info.name))
-        print("User email: {}".format(user_info.email))
-        print("User id: {}".format(user_info.id))
-
-    print("This is the user_info: {}".format(user_info))
     return render_template('index.html',
                            restaurant_list=restaurant_list,
                            top_menu_items=top_menu_item_list,
@@ -80,8 +71,10 @@ def restaurants_edit(restaurant_id):
     # If the user isn't logged in, send to the login page
     if helper.handle_login(login_session) is False:
         return redirect('/login')
+    # Find the restaurant
     restaurant = session.query(Restaurant).filter_by(id=restaurant_id).one()
     if request.method == 'POST':
+        # Only edit if the entry was re-written
         if len(request.form['address']) > 0:
             restaurant.address = request.form['address']
         if len(request.form['phone']) > 0:
@@ -99,7 +92,6 @@ def restaurants_edit(restaurant_id):
 
         restaurant.last_update = datetime.utcnow()
 
-        print("inside post for restaurants edit")
         session.add(restaurant)
         session.commit()
         flash("Restaurant {} edited!".format(restaurant.name))
@@ -109,12 +101,10 @@ def restaurants_edit(restaurant_id):
         user_info = helper.get_user_if_exists(login_session)
         tag_rest_list = session.query(RestaurantTags).filter_by(restaurant_id=restaurant.id).all()
         tag_line = ''
+        # Create a tag line - by compiling the string tag_name for each tag
         for pair in tag_rest_list:
             tag = session.query(Tags).filter_by(id=pair.tag_id).first()
-            print("the growing tag line is:")
-            print("the tag is {}".format(tag.tag_name))
             tag_line += tag.tag_name + ', '
-            print(tag_line)
         return render_template('editrestaurant.html',
                                restaurant=restaurant,
                                tag_line=tag_line,
@@ -135,11 +125,10 @@ def restaurants_delete(restaurant_id):
     # If the user isn't logged in, send to the login page
     if helper.handle_login(login_session) is False:
         return redirect('/login')
-    print("inside restaurant delete")
     restaurant = session.query(Restaurant).filter_by(id=restaurant_id).one()
     # Delete all menu items, reviews, and images for the restaurant
     if request.method == 'POST':
-        print("Post, so going to delete restaurant")
+        # Call the delete_restaurant function which deletes iteratively
         helper.delete_restaurant(restaurant.id)
         return redirect(url_for('restaurants_page'))
     else:
@@ -160,11 +149,11 @@ def restaurants_new():
                 if get - render the "newrestaurant.html" template
                             - pass: user_info
     """
+    # If the user isn't logged in, send to the login page
     if helper.handle_login(login_session) is False:
         return redirect('/login')
 
     if request.method == 'POST':
-        print("inside post for restaurants news")
         if len(request.form['name']) > 0:
             new_restaurant = Restaurant(name=request.form['name'],
                                         address=request.form['address'],
@@ -175,12 +164,10 @@ def restaurants_new():
             session.add(new_restaurant)
             session.commit()
             flash("New restaurant created - {}".format(new_restaurant.name))
-        # new_rest_obj = session.query(Restaurant).filter_by
             tag_line = request.form['tag_line']
             tag_list = tag_line.split(',')
             for tag in tag_list:
                 helper.add_tag_if_not_exists(tag, new_restaurant.id)
-
             return redirect(url_for('restaurants_page'))
         else:
             flash("Incorrect Restaurant details - Please include a name!")
@@ -226,31 +213,22 @@ def menu_item_edit(restaurant_id, menu_id):
                 if post - redirect to the restaurant_menu function to
                             get the (main) page
     """
+    # If the user isn't logged in, send to the login page
     if helper.handle_login(login_session) is False:
         return redirect('/login')
 
-    print("IN menu item edit")
     restaurant = session.query(Restaurant).filter_by(id=restaurant_id).one()
     menu_item = session.query(MenuItem).filter_by(id=menu_id).one()
     if request.method == 'POST':
-        print("Inside request method = post")
-        # if len(request.form['name']) > 0:
-        # 	menu_item.name = request.form['name']
         if len(request.form['price']) > 0:
             if '$' in request.form['price']:
                 menu_item.price = request.form['price']
             else:
                 menu_item.price = '$' + request.form['price']
-        else:
-            print("Item price is not changed")
         if len(request.form['description']) > 0:
             menu_item.description = request.form['description']
-        else:
-            print("Description is not changed")
         if 'course' in request.form:
             menu_item.course = request.form['course']
-        else:
-            print("Course is not changed")
         if 'file' in request.files:
             img_id = helper.create_new_image_if_not_exists(file=request.files['file'],
                                                            title=request.form['img_name'])
@@ -279,6 +257,7 @@ def menu_item_delete(restaurant_id, menu_id):
                             - pass: restaurant obj, menu_item obj, user_info,
                 if post - redirect to the restaurant_menu function to get the (main) page
     """
+    # If the user isn't logged in, send to the login page
     if helper.handle_login(login_session) is False:
         return redirect('/login')
 
@@ -307,20 +286,13 @@ def menu_item_new(restaurant_id):
                 if post - redirect to the restaurant_menu function to
                             get the (main) page
     """
+    # If the user isn't logged in, send to the login page
     if helper.handle_login(login_session) is False:
         return redirect('/login')
 
     restaurant = session.query(Restaurant).filter_by(id=restaurant_id).one()
     img_id = 0
     if request.method == 'POST':
-        print("inside post for restaurants news")
-        # if 'file' in request.files:
-        #     print("image file exists")
-        #     img_id = helper.create_new_image_if_not_exists(file = request.files['file'], title = request.form['img_name'])
-        # if img_id != -1:
-        print("Inside request method = post")
-        # if len(request.form['name']) > 0:
-        #   menu_item.name = request.form['name']
         if 'file' in request.files:
             print("File found")
             img_id = helper.create_new_image_if_not_exists(file=request.files['file'],
@@ -337,9 +309,6 @@ def menu_item_new(restaurant_id):
             session.add(new_item)
             session.commit()
             flash("New Menu Item {} created!".format(new_item.name))
-        else:
-            print("Error, incorrect file: {}".format(request.files['file']))
-
         return redirect(url_for('restaurant_menu', restaurant_id=restaurant_id))
     else:
         user_info = helper.get_user_if_exists(login_session)
@@ -358,17 +327,12 @@ def add_new_review(restaurant_id):
     returns:    if post - Create the review in the database and redirect to the
                             restaurant_menu function to get the (main) page
     """
-
-    print("Inside add_new_review")
+    # If the user isn't logged in, send to the login page
     if helper.handle_login(login_session) is False:
         return redirect('/login')
 
     if request.method == 'POST':
-        print("inside post for restaurants new review")
-        print(request)
         post = request.get_json()
-        print("THe post is: {0}".format(post))
-        # print("THe author is: {0}".format(param))
         if 'username' not in login_session:
             new_review = Reviews(reviewer_name='anonymous',
                                  review=post.get('review'),
@@ -381,12 +345,6 @@ def add_new_review(restaurant_id):
                                  stars=post.get('stars'),
                                  restaurant_id=restaurant_id,
                                  time=datetime.utcnow())
-
-        print("The new review object looks like: ")
-        # print(login_session['username'])
-        print(new_review.review)
-        print(new_review.stars)
-        print(new_review.restaurant_id)
         session.add(new_review)
         session.commit()
 
@@ -401,11 +359,9 @@ def new_restaurant_image_pair(restaurant_id):
     arguments:  restaurant_id (for that particular restaurant)
     returns:    template for restaurants page
     """
-    print("Inside upload_file ")
     # Don't proceed unless the user is logged in
     if helper.handle_login(login_session) is False:
         return redirect('/login')
-    print("User logged in")
 
     if request.method == 'POST':
         # Create an entry in the database for the image, and save the file
@@ -423,24 +379,4 @@ def new_restaurant_image_pair(restaurant_id):
                                             image_id=img_id)
                 session.add(rest_img)
                 session.commit()
-        else:
-            print("Error, incorrect file: {}".format(request.files['file']))
     return redirect(url_for('restaurants_page'))
-
-
-# @app.route('/restaurants/<int:restaurant_id>/<int:img_id>/delete', methods=['GET', 'POST'])
-# def delete_image_file(restaurant_id, img_id):
-#     if helper.handle_login(login_session) is False:
-#         return redirect('/login')
-
-#     image = session.query(Image).filter_by(id=img_id).first()
-#     restaurant_img_pair = session.query(RestaurantImages).filter_by(image_id=img_id).first()
-
-#     if request.method == 'POST':
-#         session.delete(image)
-#         session.delete(restaurant_img_pair)
-
-#     return redirect(url_for('restaurants_page'))
-    # else:
-    #     user_info = helper.get_user_if_exists(login_session)
-    #     return render_template('deletemenu.html', restaurant = restaurant, menu_item = menu_item, user_info = user_info)

@@ -1,14 +1,22 @@
-Restaurants and Menus Application
+Restaurant Application
 
 What it uses/Requirements:
-1. Flask Framework (http://flask.pocoo.org/) 
-2. Python 2.7.6+ (https://www.python.org/download/releases/2.7.6/)
-3. SQLAlchemy (http://www.sqlalchemy.org/) using a SQLite database
-4. OAuth2 client - https://github.com/google/oauth2client 
-5. Set up credentials with Google as per https://developers.google.com/identity/protocols/OAuth2
-6. Save the client_secrets.json file (With the client ID and client secret) in a folder one step above where these files are stored 
-   ex. if final_projects.py is in ../../MyFlaskWork/RestaurantApp/, then store client_secrets in ../../MyFlaskWork/
+1. Flask (0.10.1) (http://flask.pocoo.org/) 
+2. Werkzeug (0.10.4) 
+   (Above two are necessary to use request.get_requests(), or else you will see an error "AttributeError: 'Request' object has no attribute 'get_json' ". This is required for the AJAX requests.)
 
+3. Python (2.7.6+) (https://www.python.org/download/releases/2.7.6/)
+4. SQLAlchemy (0.8.4) (http://www.sqlalchemy.org/) using a SQLite database
+5. OAuth2 client (1.4.11) - https://github.com/google/oauth2client   
+5. Set up credentials with Google as per https://developers.google.com/identity/protocols/OAuth2
+6. Save the client_secrets.json file (With the client ID and client secret) in the same folder as final_projects.py
+7. Flask-SeaSurf (0.2.0) for the CSRF protection
+
+TO RUN: 
+1. Make sure the requirements are up to date. 
+2. Go to the folder where all the project files (specifically, final_projects.py file) are stored
+3. Enter command "python final_projects.py"
+4. Open browser and navigate to "localhost:5000/restaurants"
 
 How it works:
 1. Shows a list of restaurants @ '/' or '/restaurants'
@@ -17,29 +25,30 @@ How it works:
 4. Each restaurant name is a link to the menu of that restaurant
 5. You can log in using your Google credentials to explore more options - such as editing, deleting, adding new content
 6. Upon logging in, you can edit all content. You can delete the content you have created. You can create new restaurants, add new reviews, and and images
- 
-
 7. Menu items page of each restaurant has items displayed grouped according to course (appetizers, entree, dessert, beverages)
    Each item can be edited only after log in, and deleted only by the person who created it
 8. Each item entry displays the item name, price, description, and votes
-9. You can vote like or dislike as many times as you like (maybe fix this in the future)
-
+9. You can vote like or dislike on every menu item if you are signed in. You can swap your vote, but can vote only once per item.
 
 10. API endpoints -
 - JSON data for restaurant list: @ '/restaurants/JSON'
-- JSON data for each restaurant menu: @ '/restaurants/<int:restaurant_id>/JSON'
+- JSON data for individual restaurant: @ '/restaurant/<int:restaurant_id>/JSON'
+- JSON data for each restaurant menu: @ '/restaurants/menu/JSON'
 - JSON data for individual menu item: @ '/restaurants/<int:restaurant_id>/<int:menu_id>/JSON'
 - JSON data for images per restaurant: @ '/restaurants/images/<int:restaurant_id>/JSON'
 - JSON data for restaurant review per restaurant: @ '/restaurants/<int:restaurant_id>/reviews/JSON'
+- RSS feed for restaurant information: @ '/restaurants/RSS'
 
 
 Python files:
 1. database_setup.py - set up the ORM - Base class, Restaurant class, MenuItem class, Tag class, Review class, Images class.
-2. session_setup.py - set up the session by adding all the imports and setting up the basic session 
-3. routing.py - all the routing to relevant functions
-4. helper.py - all functions that help with the functionality but aren't associated with any routing
-5. authorization.py - all authorization functions
-6. final_projects.py - main file that runs the program
+2. session_setup.py - set up the SQLalchemy session
+3. flask_setup.py - set up the Flask app and the CSRF module
+4. routing.py - all the routing to relevant functions
+5. helper.py - all functions that help with the functionality but aren't associated with any routing
+6. authentication.py - all authentication functions
+7. api_endpoints.py - all api call functions
+8. final_projects.py - main file that runs the program
 
 
 /templates:
@@ -55,22 +64,20 @@ Python files:
 10. navbar-restaurant.html - contains the navbar details for restaurants page
 11. navbar-restaurantdetails.html contains the navbar for the restaurant details (edit/add/delete)
 12. navbar-menu.html - contains the navbar for the restaurant menu 
-
 13. login.html - allows you to log in to Google to authenticate the user
 
-/static
-
+/static:
 14. restaurant_app.js - javascript file for the AngularJS controllers and services
-
-15. main.css - custom styling
-
+15. main.css - custom styling:
 /images folder - to hold uploaded images
+
+/static/images/uploads:
+all the uploaded image files.
 
 
 TODOs:
-1. Add CSRF protection
-2. Add API endpoints for XML
-3. Add feature to include users by invitation only
+1. create a user page, where the user can see details of their actions
+2. Add feature to include users by invitation only
 4. UI enhancement
 
 BUGS:
