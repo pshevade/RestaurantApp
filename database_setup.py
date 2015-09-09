@@ -186,5 +186,5 @@ class RestaurantImages(Base):
     image = relationship(Image)
 
 
-engine = create_engine('sqlite:///myrestaurantmenu.db')
+engine = create_engine('postgresql://rest_test:test_w_pg@localhost/restaurant_pg_test')
 Base.metadata.create_all(engine)
