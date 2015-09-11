@@ -18,7 +18,7 @@ app.config.from_pyfile('config.py')
 csrf = SeaSurf(app)
 
 # Image upload information
-UPLOAD_FOLDER = 'static/images/uploads/'
+UPLOAD_FOLDER = os.path.abspath('static/images/uploads/')
 ALLOWED_EXTENSIONS = set(['png', 'jpg', 'jpeg', 'PNG', 'JPG', 'JPEG'])
 
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER

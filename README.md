@@ -13,11 +13,11 @@ What it uses/Requirements:
 TO RUN: 
 1. Make sure the requirements are up to date. 
 2. Set up credentials with Google as per https://developers.google.com/identity/protocols/OAuth2
-3. Save the client_secrets.json file (With the client ID and client secret) in the same folder as final_projects.py
+3. Save the client_secrets.json file (With the client ID and client secret) in the same folder as __init__.py
 4. Update the "data-clientid" field in the login.html file to your client id that you have in the client_secrets.json file. (Under the "GOOGLE PLUS SIGN IN" comment) 
-5. Go to the folder where all the project files (specifically, final_projects.py file) are stored
+5. Go to the folder where all the project files (specifically, __init__.py file) are stored
 
-6. Enter command "python final_projects.py"
+6. Enter command "python __init__.py"
 7. Open browser and navigate to "localhost:5000/restaurants"
 
 
@@ -71,7 +71,7 @@ Python files:
 5. helper.py - all functions that help with the functionality but aren't associated with any routing
 6. authentication.py - all authentication functions
 7. api_endpoints.py - all api call functions
-8. final_projects.py - main file that runs the program
+8. __init__.py - main file that runs the program
 
 
 /templates:

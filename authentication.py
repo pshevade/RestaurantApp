@@ -1,5 +1,7 @@
 """ Authentication with OAuth2. """
 
+import os
+
 from flask import url_for, request, redirect, flash, make_response
 from flask import session as login_session
 
@@ -15,7 +17,7 @@ from helper import create_user, get_user_id, get_user_info
 import requests
 
 
-CLIENT_ID = json.loads(open('client_secrets.json', 'r').read())['web']['client_id']
+CLIENT_ID = json.loads(open(os.path.abspath('client_secrets.json'), 'r').read())['web']['client_id']
 
 
 @csrf.exempt
