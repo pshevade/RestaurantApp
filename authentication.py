@@ -16,8 +16,7 @@ from helper import create_user, get_user_id, get_user_info
 
 import requests
 
-
-CLIENT_ID = json.loads(open(os.path.abspath('client_secrets.json'), 'r').read())['web']['client_id']
+CLIENT_ID = json.loads('/var/www/RestaurantApp/RestaurantApp/client_secrets.json', 'r').read()['web']['client_id']
 
 
 @csrf.exempt
@@ -37,7 +36,7 @@ def gconnect():
     code = request.data
     try:
         # Upgrade the authorization code into a credentials object
-        oauth_flow = flow_from_clientsecrets('client_secrets.json', scope='')
+        oauth_flow = flow_from_clientsecrets('/var/www/RestaurantApp/RestaurantApp/client_secrets.json', scope='')
         oauth_flow.redirect_uri = 'postmessage'
         credentials = oauth_flow.step2_exchange(code)
     except FlowExchangeError:

@@ -186,5 +186,5 @@ class RestaurantImages(Base):
     image = relationship(Image)
 
 
-engine = create_engine('postgresql://rest_test:test_w_pg@localhost/restaurant_pg_test')
+engine = create_engine('postgresql://catalog:catalog_user@localhost/restaurant_app')
 Base.metadata.create_all(engine)
