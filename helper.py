@@ -6,7 +6,7 @@
 
 from session_setup import session
 from flask import flash
-from flask_setup import ALLOWED_EXTENSIONS, app
+from flask_setup import ALLOWED_EXTENSIONS, app, UPLOAD_FOLDER
 from database_setup import User, Restaurant, MenuItem, \
     Image, Tags, RestaurantTags, Reviews, RestaurantImages, UserVotes
 from urlparse import urlparse
@@ -141,10 +141,11 @@ def create_new_image_if_not_exists(file, title):
         filename = secure_filename(file.filename)
         file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
         file.save(file_path)
+        image_path = os.path.join(UPLOAD_FOLDER, filename)
         image_exists = session.query(Image).filter_by(image_path=file_path).first()
         if image_exists is None:
             newimage = Image(image_title=title,
-                             image_path=file_path,
+                             image_path=image_path,
                              upload_by=login_session['user_id'])
             session.add(newimage)
             session.commit()
