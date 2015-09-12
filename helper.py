@@ -152,7 +152,7 @@ def create_new_image_if_not_exists(file, title):
         else:
             img_id = image_exists.id
     else:
-        img_id = -1
+        img_id = None
     return img_id
 
 
