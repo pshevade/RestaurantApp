@@ -16,7 +16,7 @@ from helper import create_user, get_user_id, get_user_info
 
 import requests
 
-CLIENT_ID = json.loads('/var/www/RestaurantApp/RestaurantApp/client_secrets.json', 'r').read()['web']['client_id']
+CLIENT_ID = json.loads(open('/var/www/RestaurantApp/RestaurantApp/client_secrets.json', 'r').read())['web']['client_id']
 
 
 @csrf.exempt

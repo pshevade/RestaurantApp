@@ -18,7 +18,8 @@ app.config.from_pyfile('config.py')
 csrf = SeaSurf(app)
 
 # Image upload information
-UPLOAD_FOLDER = '/var/www/RestaurantApp/RestaurantApp/static/images/uploads/'
+#UPLOAD_FOLDER = '/var/www/RestaurantApp/RestaurantApp/static/images/uploads/'
+UPLOAD_FOLDER = 'home/pshevade/images/uploads/'
 ALLOWED_EXTENSIONS = set(['png', 'jpg', 'jpeg', 'PNG', 'JPG', 'JPEG'])
 
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
