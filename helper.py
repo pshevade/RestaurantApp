@@ -168,26 +168,30 @@ def delete_restaurant(restaurant_id):
     try:
         restaurant = session.query(Restaurant).filter_by(id=restaurant_id).first()
         name = restaurant.name
-        # Delete restaurant
-        session.delete(restaurant)
-        session.commit()
-
+        tag_list = session.query(RestaurantTags).filter_by(restaurant_id=restaurant_id).all()
+        for tag_pair in tag_list:
+            # first delete where the tag is being referred to
+            session.delete(tag_pair)
+            session.commit()
+            # then we delete the tag
+            delete_tag(tag_pair.tag_id)
         menu_items = session.query(MenuItem).filter_by(restaurant_id=restaurant_id).all()
         for item in menu_items:
             delete_menu_item(item.id)
         images_list = session.query(RestaurantImages).filter_by(restaurant_id=restaurant_id).all()
         for image in images_list:
-            delete_image(image.id)
+            # first delete where the image is being referred to (including menu, which we already did)
             session.delete(image)
             session.commit()
+            # then delete the image itself
+            delete_image(image.id)
         reviews_list = session.query(Reviews).filter_by(restaurant_id=restaurant.id).all()
         for review in reviews_list:
             delete_review(review.id)
-        tag_list = session.query(RestaurantTags).filter_by(restaurant_id=restaurant_id).all()
-        for tag_pair in tag_list:
-            delete_tag(tag_pair.tag_id)
-            session.delete(tag_pair)
-            session.commit()
+        # Delete restaurant NOW, because id was used in RestaurantImages, MenItem, and RestaurantTags
+        session.delete(restaurant)
+        session.commit()
+
         flash("Restaurant {} deleted!".format(name))
         return 1
     except:
