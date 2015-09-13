@@ -227,6 +227,11 @@ def delete_menu_item(menu_id):
         menu_item = session.query(MenuItem).filter_by(id=menu_id).first()
         name = menu_item.name
         item_votes = session.query(UserVotes).filter_by(menu_id=menu_item.id).all()
+        # Delete first - menu votes since menu item is fk here
+        for vote in item_votes:
+            session.delete(vote)
+            session.commit()
+        # Delete menu next since image is fk here
         try:
             session.delete(menu_item)
             session.commit()
@@ -234,13 +239,10 @@ def delete_menu_item(menu_id):
         except:
             print "Couldn't delete menu item. "
             return 0
-        # Delete associated images
+        # Delete associated images last.
         delete_image(menu_item.image_id)
         print "Deleted image records from menu item. "
-        # Delete menu item
-        for vote in item_votes:
-            session.delete(vote)
-            session.commit()
+        
         print "Deleted related vote records for menu item. "
         flash("Menu item {} deleted".format(name))
         return 1
