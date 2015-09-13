@@ -142,7 +142,7 @@ def create_new_image_if_not_exists(file, title):
         file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
         file.save(file_path)
         image_path = os.path.join(UPLOAD_FOLDER, filename)
-        image_exists = session.query(Image).filter_by(image_path=file_path).first()
+        image_exists = session.query(Image).filter_by(image_path=image_path).first()
         if image_exists is None:
             newimage = Image(image_title=title,
                              image_path=image_path,
@@ -168,6 +168,10 @@ def delete_restaurant(restaurant_id):
     try:
         restaurant = session.query(Restaurant).filter_by(id=restaurant_id).first()
         name = restaurant.name
+        # Delete restaurant
+        session.delete(restaurant)
+        session.commit()
+
         menu_items = session.query(MenuItem).filter_by(restaurant_id=restaurant_id).all()
         for item in menu_items:
             delete_menu_item(item.id)
@@ -184,8 +188,6 @@ def delete_restaurant(restaurant_id):
             delete_tag(tag_pair.tag_id)
             session.delete(tag_pair)
             session.commit()
-        session.delete(restaurant)
-        session.commit()
         flash("Restaurant {} deleted!".format(name))
         return 1
     except:
@@ -221,14 +223,21 @@ def delete_menu_item(menu_id):
         menu_item = session.query(MenuItem).filter_by(id=menu_id).first()
         name = menu_item.name
         item_votes = session.query(UserVotes).filter_by(menu_id=menu_item.id).all()
+        try:
+            session.delete(menu_item)
+            session.commit()
+            print "Deleted menu item. "
+        except:
+            print "Couldn't delete menu item. "
+            return 0
         # Delete associated images
         delete_image(menu_item.image_id)
+        print "Deleted image records from menu item. "
         # Delete menu item
         for vote in item_votes:
             session.delete(vote)
             session.commit()
-        session.delete(menu_item)
-        session.commit()
+        print "Deleted related vote records for menu item. "
         flash("Menu item {} deleted".format(name))
         return 1
     except:
