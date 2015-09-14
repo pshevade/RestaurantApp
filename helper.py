@@ -255,6 +255,11 @@ def delete_image(image_id):
     try:
         # Find image to delete
         image = session.query(Image).filter_by(id=image_id).first()
+        # Find if the image is used in restaurant_image pair
+        r_img_pair_list = session.query(RestaurantImages).filter_by(image_id=image.id).all()
+        for r_img_pair in r_img_pair_list:
+            session.delete(r_img_pair)
+            session.commit()
         session.delete(image)
         session.commit()
         return 1
